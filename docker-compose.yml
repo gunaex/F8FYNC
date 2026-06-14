@@ -1,0 +1,44 @@
+services:
+  web:
+    build:
+      context: .
+    command: pnpm dev --hostname 0.0.0.0
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.example
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+  test:
+    build:
+      context: .
+    command: pnpm test
+    env_file:
+      - .env.example
+
+  typecheck:
+    build:
+      context: .
+    command: pnpm typecheck
+    env_file:
+      - .env.example
+
+  build:
+    build:
+      context: .
+    command: pnpm build
+    env_file:
+      - .env.example
+
+  e2e:
+    build:
+      context: .
+    command: pnpm test:e2e
+    env_file:
+      - .env.example

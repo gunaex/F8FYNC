@@ -1,0 +1,49 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { localeLabels } from "@/i18n";
+import type { SupportedLocale } from "@/core/domain";
+
+type Dictionary = Record<string, unknown>;
+
+function read(dictionary: Dictionary, key: string) {
+  return key.split(".").reduce<unknown>((current, part) => {
+    if (current && typeof current === "object" && part in current) return (current as Dictionary)[part];
+    return undefined;
+  }, dictionary) as string;
+}
+
+export function LanguageSwitcher({ locale }: { locale: SupportedLocale }) {
+  return (
+    <nav className="language-switcher" aria-label="Language">
+      {Object.entries(localeLabels).map(([code, label]) => (
+        <Link key={code} href={`/${code}`} aria-current={code === locale}>
+          {label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+export function AppShell({ locale, dictionary, children }: { locale: SupportedLocale; dictionary: Dictionary; children: ReactNode }) {
+  return (
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="app-header-inner">
+          <Link className="brand" href={`/${locale}`}>
+            <strong>{read(dictionary, "common.appName")}</strong>
+            <span>{read(dictionary, "home.greeting")}</span>
+          </Link>
+          <LanguageSwitcher locale={locale} />
+        </div>
+      </header>
+      <main className="main-content">{children}</main>
+      <nav className="bottom-nav" aria-label="Primary">
+        <Link href={`/${locale}`}><span aria-hidden="true">◇</span>{read(dictionary, "nav.home")}</Link>
+        <Link href={`/${locale}/pricing`}><span aria-hidden="true">◎</span>{read(dictionary, "nav.pricing")}</Link>
+        <Link href={`/${locale}/timeline`}><span aria-hidden="true">▥</span>{read(dictionary, "nav.timeline")}</Link>
+        <Link href={`/${locale}/history`}><span aria-hidden="true">▤</span>{read(dictionary, "nav.history")}</Link>
+        <Link href={`/${locale}/account`}><span aria-hidden="true">◌</span>{read(dictionary, "nav.account")}</Link>
+      </nav>
+    </div>
+  );
+}
