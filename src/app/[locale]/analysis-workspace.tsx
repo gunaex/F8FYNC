@@ -30,8 +30,10 @@ type AIOutput = {
 const initialState: AnalysisFormState = {
   birthDate: "1990-01-01",
   birthTime: "10:30",
+  birthTimeStatus: "KNOWN",
   birthLocation: "Bangkok, Thailand",
   birthTimezone: "Asia/Bangkok",
+  timezoneConfirmationStatus: "CONFIRMED",
   contextTimezone: "Asia/Bangkok",
   queryType: "daily",
   targetType: "general",
@@ -50,6 +52,9 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
   const flatForm = useMemo(() => {
     const keys = [
       "birthDate", "birthTime", "birthLocation", "birthTimezone", "contextTimezone", "analysisType", "targetType",
+      "birthTimeStatus", "birthTimeKnown", "birthTimeUnknown", "birthTimeApproximate", "birthTimeDisputed",
+      "timezoneConfirmationStatus", "timezoneConfirmed", "timezoneSuggested", "timezoneUnresolved", "timezoneUnknown",
+      "birthInputUnavailableDisclosure",
       "targetValue", "objective", "analysis.daily", "analysis.timing", "analysis.compatibility", "analysis.comparison",
       "target.general", "target.phone_number", "target.vehicle_plate", "target.house_number", "target.room_number",
       "target.name", "target.event_datetime", "loading", "run", "clear"
@@ -68,7 +73,7 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
         queryType: formState.queryType,
         birthProfile: {
           birthDate: formState.birthDate,
-          birthTime: formState.birthTime || undefined,
+          birthTime: formState.birthTimeStatus === "UNKNOWN" ? undefined : formState.birthTime || undefined,
           birthLocation: formState.birthLocation,
           birthTimezone: formState.birthTimezone
         },

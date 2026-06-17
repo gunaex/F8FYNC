@@ -9,8 +9,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const { id } = await params;
     const profile = await updateBirthProfile(session.memberId, id, await request.json());
     return NextResponse.json({ success: true, data: profile });
-  } catch {
-    return NextResponse.json({ success: false, error: { code: "PROFILE_UPDATE_FAILED", messageKey: "errors.profileUpdateFailed" } }, { status: 400 });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: { code: error instanceof Error ? error.message : "PROFILE_UPDATE_FAILED", messageKey: "errors.profileUpdateFailed" } },
+      { status: 400 }
+    );
   }
 }
 

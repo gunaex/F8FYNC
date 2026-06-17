@@ -1,5 +1,6 @@
 import type { AggregatedFortuneResult, FortuneQueryType, FortuneRequest, FortuneTarget, SupportedLocale } from "@/core/domain";
 import type { AIInterpretationOutput } from "@/ai";
+import type { BirthInputReadiness, CanonicalBirthInput, TimezoneSuggestion } from "@/core/profile";
 
 export type UserType = "guest" | "member" | "admin";
 
@@ -23,6 +24,9 @@ export type ManagedBirthProfile = {
   birthTime?: string;
   birthLocation: string;
   birthTimezone: string;
+  birthInput: CanonicalBirthInput;
+  inputReadiness: BirthInputReadiness;
+  timezoneSuggestion?: TimezoneSuggestion;
   genderForCalculation?: string;
   isPrimary: boolean;
   createdAt: string;

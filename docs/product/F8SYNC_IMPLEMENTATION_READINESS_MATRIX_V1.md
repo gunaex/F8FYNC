@@ -18,9 +18,11 @@ Readiness categories:
 
 | Component | Readiness | Blocking Decisions | Reason | Next Action |
 |---|---|---|---|---|
-| V1 normalized birth input contract | CONTRACT_IMPLEMENTED | BIRTH-002, BIRTH-003, BIRTH-005 | 0C added explicit unknown/status fields, no fabricated time, confirmed timezone state, and time-sensitive blocked states. | Wire into profile/API flows after schema migration plan is approved. |
+| V1 normalized birth input contract | CONTRACT_IMPLEMENTED | BIRTH-002, BIRTH-003, BIRTH-005 | 1A wires explicit unknown/status fields, no fabricated time, confirmed timezone state, and time-sensitive blocked states into profile persistence/API. | Future engine can consume canonical input after methodology approval. |
 | Birth input UI copy | READY_FOR_CONTRACT_DESIGN | BIRTH-002, BIRTH-003, BIRTH-009 | KT approved unknown birth-time product behavior; conflicting input copy still needs detailed UX writing, not product direction. | Draft copy and validation states around known, unknown, approximate, disputed, and conflicting input. |
-| IANA timezone validation contract | CONTRACT_IMPLEMENTED | TIME-003 | 0C added IANA validation and confirmed-timezone readiness blocking without selecting a final resolver implementation. | Wire into UI/API normalization later; historical resolver remains expert-blocked. |
+| IANA timezone validation and confirmation boundary | CONTRACT_IMPLEMENTED | TIME-003 | 1A validates IANA timezone IDs, stores confirmation status, and keeps suggestions unconfirmed until user confirmation. | Historical resolver remains expert-blocked. |
+| Timezone suggestion boundary | CONTRACT_IMPLEMENTED | BIRTH-005, TIME-003 | 1A adds an isolated suggestion provider shape with source, confidence, and required user confirmation. | Add richer providers only after approval; no geocoding in V1 foundation. |
+| Birth profile persistence/API foundation | CONTRACT_IMPLEMENTED | BIRTH-002, BIRTH-003, BIRTH-004, BIRTH-005, TIME-003, TIME-007 | 1A stores canonical birth input and readiness while preserving legacy fields. | Add production database adapter if repository moves beyond memory-store persistence. |
 | Historical timezone resolver | READY_FOR_EXPERT_REVIEW | BIRTH-006, TIME-008 | 0D package provides source-selection matrix, questionnaire, and Golden worksheet for historical timezone behavior. | Expert selects/validates resolver source; implementation remains blocked until approved. |
 | Calendar resolver boundary | READY_FOR_EXPERT_REVIEW | TIME-002, BAZI-005 | 0D package captures resolver ownership, solar-term source, and conflict policy. | Expert validates source and boundary fixtures before implementation. |
 | Solar-term service | READY_FOR_EXPERT_REVIEW | BAZI-003, BAZI-004, BAZI-005 | 0D package provides source matrix and boundary worksheets; no source selected yet. | Expert validates solar-term source and Golden cases. |
@@ -65,7 +67,7 @@ Readiness categories:
 
 | Status | Count | Components |
 |---|---:|---|
-| CONTRACT_IMPLEMENTED | 9 | Birth input contract, IANA validation, evidence, confidence, trace, version set, F8SYNC boundary, generic result envelope, AI minimized input |
+| CONTRACT_IMPLEMENTED | 11 | Birth input contract, IANA validation/confirmation, timezone suggestion boundary, birth profile persistence/API foundation, evidence, confidence, trace, version set, F8SYNC boundary, generic result envelope, AI minimized input |
 | READY_FOR_CONTRACT_DESIGN | 8 | Birth input UX states, canonical codes, Ten Gods presentation boundary, element output shapes, tension/tie/narrative contracts, AI audit contracts |
 | READY_FOR_EXPERT_REVIEW | 17 | Historical timezone, calendar resolver source, solar terms, pillars, hidden stems, Day Master, seasonal strength, element weighting, identity dimensions/archetype derivation, daily timing |
 | BLOCKED_BY_PRODUCT_DECISION | 1 | Notifications from timing |
