@@ -1,10 +1,10 @@
 # F8SYNC Methodology Decision Register V1
 
-**Milestone:** 0B - Methodology Lock and Intelligence Decision Pack  
-**Date:** 2026-06-17  
-**Status:** Draft for Product Owner and expert review  
-**Decision Owner:** Product Owner - KT  
-**Methodology Reviewer:** Designated BaZi methodology expert or reviewer  
+**Milestone:** 0B / 0D - Methodology Lock and Expert Validation Package
+**Date:** 2026-06-17
+**Status:** Product decisions recorded; expert validation package prepared
+**Decision Owner:** Product Owner - KT
+**Methodology Reviewer:** Designated BaZi methodology expert or reviewer
 
 This register separates current repository behavior from approved methodology. Existing code is evidence of implementation only. It is not automatically approved methodology.
 
@@ -54,6 +54,22 @@ KT recorded 15 Product Owner approval records in `F8SYNC_KT_PRODUCT_DECISION_PAC
 | PO-0B1-015 | TIMING-006 | APPROVE RECOMMENDED | `LOCKED` |
 
 Product Owner approval does not lock calculation methodology. Any item marked `PENDING_EXPERT_VALIDATION` still requires expert evidence before implementation.
+
+## Milestone 0D Expert Validation Package
+
+Milestone 0D prepares the expert-review package for methodology decisions. It does not approve methodology, select an authoritative source, assign a reviewer, or fill Golden expected values.
+
+| 0D Artifact | Purpose |
+|---|---|
+| `F8SYNC_EXPERT_VALIDATION_PACK_V1.md` | Consolidated expert-required decision inventory and review inputs. |
+| `F8SYNC_METHODOLOGY_SOURCE_SELECTION_V1.md` | Matrix for choosing the authoritative source path. |
+| `F8SYNC_EXPERT_REVIEW_QUESTIONNAIRE_V1.md` | Actionable questions tied to decision IDs. |
+| `F8SYNC_RULE_APPROVAL_REGISTER_V1.md` | Blank expert approval table for draft rules. |
+| `F8SYNC_GOLDEN_REFERENCE_WORKSHEETS_V1.md` | Blank Golden worksheets; expected values intentionally empty. |
+| `F8SYNC_EXPERT_REVIEW_AND_CONFLICT_POLICY_V1.md` | Reviewer qualification and conflict handling policy. |
+| `F8SYNC_0D_VALIDATION_GATE_REPORT.md` | Gate status before Milestone 1A or calculation implementation. |
+
+Decisions marked `PENDING_EXPERT_VALIDATION` are now ready to be reviewed using the 0D package, but their status remains unchanged until expert evidence is recorded.
 
 ## Status Definitions
 
@@ -157,7 +173,7 @@ Product Owner approval does not lock calculation methodology. Any item marked `P
 
 ## Blocking Milestone 0C Decisions
 
-Milestone 0C contract design is blocked until KT approves or explicitly defers the following:
+Milestone 0C contract design has completed. The remaining blockers below now apply to expert validation, Milestone 1A preparation, and future deterministic calculation implementation:
 
 - V1 normalized birth input fields and unknown representation.
 - IANA timezone requirement and calendar resolver ownership.
@@ -167,4 +183,4 @@ Milestone 0C contract design is blocked until KT approves or explicitly defers t
 - F8SYNC Intelligence Layer outputs authorized for contract design.
 - AI allowed-input boundary.
 
-Expert validation can continue after 0C contract skeletons only if the contracts preserve unknown and pending fields without encoding unapproved calculations.
+Expert validation can continue using the 0D package only if the contracts preserve unknown and pending fields without encoding unapproved calculations.
