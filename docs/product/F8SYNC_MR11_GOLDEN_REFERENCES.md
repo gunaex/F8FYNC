@@ -301,15 +301,15 @@ Required tool evidence:
 |---|---|
 | Year | 甲辰 Jia Chen |
 | Month | 丁卯 Ding Mao |
-| Day | 己卯 Ji Mao |
-| Hour | 甲子 Jia Zi |
+| Day | 戊寅 Wu Yin |
+| Hour | 壬子 Ren Zi |
 
 **Evidence Fields:**
 
 | Field | Value |
 |---|---|
 | Day rollover setting | PENDING |
-| Zi-hour variant comparison | PENDING |
+| Zi-hour variant comparison | Primary civil-midnight day: 戊寅 Wu Yin. Zi-hour split alternative day: 己卯 Ji Mao. |
 | Tool settings evidence | PENDING |
 | Output artifact | PENDING |
 | Reviewer | PENDING |
