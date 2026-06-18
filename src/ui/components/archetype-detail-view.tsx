@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ArchetypeArtwork } from "./archetype-artwork";
 import type { F8SyncDashboardViewModel, F8SyncElementKey } from "./f8sync-dashboard-types";
 
@@ -32,6 +32,8 @@ const imageSlugs: Record<F8SyncDashboardViewModel["archetype"]["id"], string> = 
 };
 
 export function ArchetypeDetailView({ open, archetype, onClose }: ArchetypeDetailViewProps) {
+  const [imageAvailable, setImageAvailable] = useState(true);
+
   useEffect(() => {
     if (!open) return;
     function closeOnEscape(event: KeyboardEvent) {
@@ -41,6 +43,10 @@ export function ArchetypeDetailView({ open, archetype, onClose }: ArchetypeDetai
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [onClose, open]);
 
+  useEffect(() => {
+    setImageAvailable(true);
+  }, [archetype.id]);
+
   if (!open) return null;
 
   const imageNumber = archetype.id.replace("ARCH-", "").padStart(2, "0");
@@ -49,7 +55,15 @@ export function ArchetypeDetailView({ open, archetype, onClose }: ArchetypeDetai
   return (
     <div className="f8sync-detail-overlay" role="dialog" aria-modal="true" aria-labelledby="f8sync-detail-title">
       <div className="f8sync-detail-sheet">
-        <div className="f8sync-detail-hero" style={{ background: `${fallbackGradients[archetype.element]}, url(${imagePath}) center / cover` }}>
+        <div className="f8sync-detail-hero" style={{ background: fallbackGradients[archetype.element] }}>
+          {imageAvailable ? (
+            <img
+              src={imagePath}
+              alt=""
+              aria-hidden="true"
+              onError={() => setImageAvailable(false)}
+            />
+          ) : null}
           <button className="f8sync-close-button" type="button" onClick={onClose} aria-label="ปิด">×</button>
           <div>
             <h2 id="f8sync-detail-title">{archetype.nameTh}</h2>
