@@ -1,4 +1,4 @@
-export type SolarTermKey = "XIAO_HAN" | "LI_CHUN" | "JING_ZHE" | "QING_MING";
+export type SolarTermKey = "XIAO_HAN" | "LI_CHUN" | "JING_ZHE" | "QING_MING" | "LI_DONG" | "DA_XUE";
 
 export type JieSolarTermBoundary = {
   key: SolarTermKey;
@@ -30,6 +30,51 @@ export const EPHEMERIS_DATA = "DE431-derived-boundary-fixtures";
 export const IANA_VERSION = "runtime-intl";
 
 const lockedGate1BBoundaries: JieSolarTermBoundary[] = [
+  {
+    key: "LI_CHUN",
+    name: "Li Chun",
+    eclipticLongitude: 315,
+    monthNumber: 1,
+    branchKey: "YIN",
+    utc: "1940-02-05T05:00:00.000Z",
+    source: "LOCKED_GATE_1B_BOUNDARY_TABLE"
+  },
+  {
+    key: "LI_DONG",
+    name: "Li Dong",
+    eclipticLongitude: 225,
+    monthNumber: 10,
+    branchKey: "HAI",
+    utc: "1940-11-07T12:00:00.000Z",
+    source: "LOCKED_GATE_1B_BOUNDARY_TABLE"
+  },
+  {
+    key: "LI_CHUN",
+    name: "Li Chun",
+    eclipticLongitude: 315,
+    monthNumber: 1,
+    branchKey: "YIN",
+    utc: "1989-02-04T00:00:00.000Z",
+    source: "LOCKED_GATE_1B_BOUNDARY_TABLE"
+  },
+  {
+    key: "DA_XUE",
+    name: "Da Xue",
+    eclipticLongitude: 255,
+    monthNumber: 11,
+    branchKey: "ZI",
+    utc: "1989-12-07T00:00:00.000Z",
+    source: "LOCKED_GATE_1B_BOUNDARY_TABLE"
+  },
+  {
+    key: "LI_CHUN",
+    name: "Li Chun",
+    eclipticLongitude: 315,
+    monthNumber: 1,
+    branchKey: "YIN",
+    utc: "1990-02-04T00:00:00.000Z",
+    source: "LOCKED_GATE_1B_BOUNDARY_TABLE"
+  },
   {
     key: "XIAO_HAN",
     name: "Xiao Han",
