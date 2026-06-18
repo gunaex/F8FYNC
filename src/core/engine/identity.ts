@@ -58,11 +58,11 @@ const archetypes: Record<FiveElement, { strong: IdentityArchetype; weak: Identit
   },
   EARTH: {
     strong: { id: "ARCH-05", nameTh: "ภูเขา", element: "EARTH", strength: "STRONG" },
-    weak: { id: "ARCH-06", nameTh: "ดิน", element: "EARTH", strength: "WEAK" }
+    weak: { id: "ARCH-06", nameTh: "ผืนดิน", element: "EARTH", strength: "WEAK" }
   },
   METAL: {
     strong: { id: "ARCH-07", nameTh: "ดาบ", element: "METAL", strength: "STRONG" },
-    weak: { id: "ARCH-08", nameTh: "ทอง", element: "METAL", strength: "WEAK" }
+    weak: { id: "ARCH-08", nameTh: "อัญมณี", element: "METAL", strength: "WEAK" }
   },
   WATER: {
     strong: { id: "ARCH-09", nameTh: "มหาสมุทร", element: "WATER", strength: "STRONG" },

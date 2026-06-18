@@ -1088,18 +1088,12 @@ a {
   padding-left: 1.1rem;
 }
 
-.f8sync-supporting-elements {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.f8sync-supporting-elements span {
-  border-radius: 999px;
-  background: #eeedfe;
-  color: #3c3489;
-  padding: 0.35rem 0.65rem;
-  font-size: 0.82rem;
+.f8sync-methodology-disclosure {
+  border-top: 1px solid rgb(23 27 36 / 0.08);
+  margin: 0;
+  color: var(--color-text-secondary);
+  padding-top: var(--space-3);
+  font-size: 0.84rem;
 }
 
 .f8sync-pillar-sheet {

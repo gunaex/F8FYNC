@@ -24,10 +24,11 @@ export type F8SyncDashboardViewModel = {
     element: F8SyncElementKey;
     strength: "STRONG" | "WEAK";
     summary: string;
-    detail: string;
+    descriptionParagraphs: string[];
     strengths: string[];
     cautions: string[];
-    supportingElements: string[];
+    supportGuidance?: string[];
+    methodologyDisclosure: string;
   };
   pillars: Array<{
     key: F8SyncPillarKey;
