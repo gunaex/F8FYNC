@@ -3,12 +3,10 @@ import {
   CALENDAR_ENGINE_VERSION,
   EPHEMERIS_DATA,
   IANA_VERSION,
-  findActiveJieBoundary,
-  findNearestJieBoundary,
-  getLiChunBoundary,
-  type EarthlyBranchKey,
-  type JieSolarTermBoundary
+  type EarthlyBranchKey
 } from "./ephemeris";
+import { productionSolarTermProvider, getSolarTermDefinition } from "./solar-term-provider";
+import type { SolarTermBoundary, SolarTermProvider } from "./solar-term-types";
 
 export type HeavenlyStemKey = "JIA" | "YI" | "BING" | "DING" | "WU" | "JI" | "GENG" | "XIN" | "REN" | "GUI";
 
@@ -28,6 +26,7 @@ export type Gate1BCalendarInput = {
   timezoneId: string | null;
   timezoneConfirmationStatus?: "CONFIRMED" | "SUGGESTED" | "UNRESOLVED" | "UNKNOWN";
   timeAdjustmentPolicy?: "LOCAL_CIVIL_TIME" | "TRUE_SOLAR_TIME";
+  solarTermProvider?: SolarTermProvider;
 };
 
 export type BoundaryDispute = {
@@ -40,7 +39,16 @@ export type BoundaryDispute = {
 };
 
 export type Gate1BCalendarBlockedResult = {
-  status: "BLOCKED_MISSING_TIME" | "BLOCKED_MISSING_TIMEZONE" | "BLOCKED_INVALID_INPUT" | "UNSUPPORTED_IN_V1" | "BLOCKED_UNAVAILABLE_BOUNDARY";
+  status:
+    | "BLOCKED_MISSING_TIME"
+    | "BLOCKED_MISSING_TIMEZONE"
+    | "BLOCKED_INVALID_TIMEZONE"
+    | "BLOCKED_INVALID_INPUT"
+    | "UNSUPPORTED_IN_V1"
+    | "BLOCKED_UNAVAILABLE_BOUNDARY"
+    | "BLOCKED_CALENDAR_YEAR_OUT_OF_RANGE"
+    | "BLOCKED_SOLAR_TERM_DATA_UNAVAILABLE"
+    | "BLOCKED_CALENDAR_SOURCE_UNAVAILABLE";
   reasonCodes: string[];
   trace: string[];
 };
@@ -190,46 +198,67 @@ function getMonthOneStem(yearStem: HeavenlyStemKey): HeavenlyStemKey {
   return "JIA";
 }
 
-export function calculateMonthPillar(yearStem: HeavenlyStemKey, activeBoundary: JieSolarTermBoundary): StemBranch {
+export function calculateMonthPillar(yearStem: HeavenlyStemKey, activeBoundary: SolarTermBoundary): StemBranch {
+  const definition = getSolarTermDefinition(activeBoundary.termCode);
+  if (definition.termType !== "JIE" || !definition.monthNumber || !definition.branchKey) {
+    throw new Error(`Solar term ${activeBoundary.termCode} is not a Jie month boundary`);
+  }
   const monthOneStem = getMonthOneStem(yearStem);
   const monthOneStemIndex = stemCycle.indexOf(monthOneStem);
-  const stem = stemCycle[(monthOneStemIndex + activeBoundary.monthNumber - 1) % stemCycle.length];
-  return stemBranch(stem, activeBoundary.branchKey);
+  const stem = stemCycle[(monthOneStemIndex + definition.monthNumber - 1) % stemCycle.length];
+  return stemBranch(stem, definition.branchKey);
 }
 
-function buildBoundaryDispute(boundaryType: "YEAR" | "MONTH", boundary: JieSolarTermBoundary, distanceMs: number, candidates: StemBranch[]): BoundaryDispute {
+function buildBoundaryDispute(boundaryType: "YEAR" | "MONTH", boundary: SolarTermBoundary, distanceMs: number, candidates: StemBranch[]): BoundaryDispute {
+  const definition = getSolarTermDefinition(boundary.termCode);
   return {
     code: "BOUNDARY_DISPUTED",
     boundaryType,
-    solarTerm: boundary.name,
-    boundaryUtc: boundary.utc,
+    solarTerm: definition.name,
+    boundaryUtc: boundary.instantUtc,
     distanceMs,
     candidates
   };
 }
 
+function providerBlocked(
+  status: Exclude<Gate1BCalendarBlockedResult["status"], "BLOCKED_MISSING_TIME" | "BLOCKED_MISSING_TIMEZONE" | "BLOCKED_INVALID_TIMEZONE" | "BLOCKED_INVALID_INPUT" | "UNSUPPORTED_IN_V1" | "BLOCKED_UNAVAILABLE_BOUNDARY">,
+  reasonCodes: string[],
+  trace: string[]
+): Gate1BCalendarBlockedResult {
+  return { status, reasonCodes, trace };
+}
+
 export function calculateGate1BCalendar(input: Gate1BCalendarInput): Gate1BCalendarResult {
   const trace: string[] = ["Gate 1B calendar calculation started"];
   const birthTimeStatus = input.birthTimeStatus ?? "KNOWN";
+  const solarTermProvider = input.solarTermProvider ?? productionSolarTermProvider;
+  const providerCapabilities = solarTermProvider.getCapabilities();
 
   if (input.timeAdjustmentPolicy === "TRUE_SOLAR_TIME") return blocked("UNSUPPORTED_IN_V1", ["TRUE_SOLAR_TIME_UNSUPPORTED_IN_V1"]);
-  if (!parseLocalDate(input.localDate)) return blocked("BLOCKED_INVALID_INPUT", ["LOCAL_DATE_INVALID"]);
+  const localDate = parseLocalDate(input.localDate);
+  if (!localDate) return blocked("BLOCKED_INVALID_INPUT", ["LOCAL_DATE_INVALID"]);
+  if (localDate.year < providerCapabilities.birthYearSupportStart || localDate.year > providerCapabilities.birthYearSupportEnd) {
+    return blocked("BLOCKED_CALENDAR_YEAR_OUT_OF_RANGE", ["BIRTH_YEAR_OUT_OF_SUPPORTED_RANGE"]);
+  }
   if (birthTimeStatus !== "KNOWN" || !input.localTime) return blocked("BLOCKED_MISSING_TIME", ["KNOWN_LOCAL_TIME_REQUIRED_FOR_SOLAR_TERM_BOUNDARY"]);
   if (!parseLocalTime(input.localTime)) return blocked("BLOCKED_INVALID_INPUT", ["LOCAL_TIME_INVALID"]);
   if (!input.timezoneId || input.timezoneConfirmationStatus !== "CONFIRMED") {
     return blocked("BLOCKED_MISSING_TIMEZONE", ["CONFIRMED_IANA_TIMEZONE_REQUIRED"]);
   }
-  if (!assertValidTimeZone(input.timezoneId)) return blocked("BLOCKED_INVALID_INPUT", ["TIMEZONE_NOT_IANA"]);
+  if (!assertValidTimeZone(input.timezoneId)) return blocked("BLOCKED_INVALID_TIMEZONE", ["TIMEZONE_NOT_IANA"]);
 
-  const localDate = parseLocalDate(input.localDate);
   const birthUtc = localCivilTimeToUtc(input.localDate, input.localTime, input.timezoneId);
   if (!localDate || !birthUtc) return blocked("BLOCKED_INVALID_INPUT", ["LOCAL_DATE_TIME_INVALID"]);
 
-  const liChun = getLiChunBoundary(localDate.year);
-  const activeMonthBoundary = findActiveJieBoundary(birthUtc);
-  if (!liChun || !activeMonthBoundary) return blocked("BLOCKED_UNAVAILABLE_BOUNDARY", ["LOCKED_GATE_1B_BOUNDARY_NOT_AVAILABLE"]);
+  const liChunResult = solarTermProvider.getLiChunBoundary(localDate.year);
+  const activeMonthBoundaryResult = solarTermProvider.findActiveJieBoundary(birthUtc.toISOString());
+  if (liChunResult.status !== "READY") return providerBlocked(liChunResult.status, liChunResult.reasonCodes, [...trace, ...liChunResult.trace]);
+  if (activeMonthBoundaryResult.status !== "READY") return providerBlocked(activeMonthBoundaryResult.status, activeMonthBoundaryResult.reasonCodes, [...trace, ...activeMonthBoundaryResult.trace]);
 
-  const liChunUtcMs = Date.parse(liChun.utc);
+  const liChun = liChunResult.boundary;
+  const activeMonthBoundary = activeMonthBoundaryResult.boundary;
+  const liChunUtcMs = Date.parse(liChun.instantUtc);
   const birthUtcMs = birthUtc.getTime();
   const solarYear = birthUtcMs < liChunUtcMs ? localDate.year - 1 : localDate.year;
   const yearPillar = calculateYearPillarForSolarYear(solarYear);
@@ -246,18 +275,23 @@ export function calculateGate1BCalendar(input: Gate1BCalendarInput): Gate1BCalen
     );
   }
 
-  const nearestBoundary = findNearestJieBoundary(birthUtc);
-  if (nearestBoundary && nearestBoundary.boundary.key !== "LI_CHUN" && nearestBoundary.distanceMs <= BOUNDARY_TOLERANCE_MS) {
-    const priorBoundary = findActiveJieBoundary(new Date(Date.parse(nearestBoundary.boundary.utc) - 1));
-    const candidates = [priorBoundary, nearestBoundary.boundary]
-      .filter((boundary): boundary is JieSolarTermBoundary => Boolean(boundary))
+  const nearestBoundary = solarTermProvider.findNearestJieBoundary(birthUtc.toISOString());
+  if (nearestBoundary.status === "READY" && nearestBoundary.boundary.termCode !== "LI_CHUN" && nearestBoundary.distanceMs <= BOUNDARY_TOLERANCE_MS) {
+    const priorBoundary = solarTermProvider.findActiveJieBoundary(new Date(Date.parse(nearestBoundary.boundary.instantUtc) - 1).toISOString());
+    const candidates = [priorBoundary.status === "READY" ? priorBoundary.boundary : null, nearestBoundary.boundary]
+      .filter((boundary): boundary is SolarTermBoundary => Boolean(boundary))
       .map((boundary) => calculateMonthPillar(yearPillar.stem, boundary));
     boundaryFlags.push(buildBoundaryDispute("MONTH", nearestBoundary.boundary, nearestBoundary.distanceMs, candidates));
+  }
+
+  if (yearBoundaryDistanceMs <= 30 * 60_000 || (nearestBoundary.status === "READY" && nearestBoundary.distanceMs <= 30 * 60_000)) {
+    trace.push("BOUNDARY_SENSITIVE_SOLAR_TERM");
   }
 
   trace.push("MR-01.v1.0 local civil time and IANA timezone policy applied");
   trace.push("MR-02.v1.0 Li Chun year boundary applied");
   trace.push("MR-03.v1.0 Jié month boundary and Five Tigers rule applied");
+  trace.push(`SolarTermProvider=${providerCapabilities.providerId}:${providerCapabilities.datasetVersion}`);
 
   return {
     status: boundaryFlags.length > 0 ? "BOUNDARY_DISPUTED" : "READY",

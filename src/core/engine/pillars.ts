@@ -1,6 +1,7 @@
 import { calculateGate1BCalendar, type BoundaryDispute } from "./calendar";
 import { advanceBranch, advanceStem, formatStemBranch, stemBranch, type StemBranch, type HeavenlyStemKey } from "./stems-branches";
 import type { EarthlyBranchKey } from "./ephemeris";
+import type { SolarTermProvider } from "./solar-term-types";
 
 export type FourPillarsInput = {
   localDate: string;
@@ -9,10 +10,19 @@ export type FourPillarsInput = {
   timezoneId: string | null;
   timezoneConfirmationStatus: "CONFIRMED" | "SUGGESTED" | "UNRESOLVED" | "UNKNOWN";
   timeAdjustmentPolicy?: "LOCAL_CIVIL_TIME" | "TRUE_SOLAR_TIME";
+  solarTermProvider?: SolarTermProvider;
 };
 
 export type FourPillarsBlockedResult = {
-  status: "BLOCKED_MISSING_TIMEZONE" | "BLOCKED_INVALID_INPUT" | "UNSUPPORTED_IN_V1" | "BLOCKED_UNAVAILABLE_BOUNDARY";
+  status:
+    | "BLOCKED_MISSING_TIMEZONE"
+    | "BLOCKED_INVALID_TIMEZONE"
+    | "BLOCKED_INVALID_INPUT"
+    | "UNSUPPORTED_IN_V1"
+    | "BLOCKED_UNAVAILABLE_BOUNDARY"
+    | "BLOCKED_CALENDAR_YEAR_OUT_OF_RANGE"
+    | "BLOCKED_SOLAR_TERM_DATA_UNAVAILABLE"
+    | "BLOCKED_CALENDAR_SOURCE_UNAVAILABLE";
   reasonCodes: string[];
   trace: string[];
 };
@@ -130,7 +140,16 @@ export function calculateFourPillars(input: FourPillarsInput): FourPillarsResult
   const calendarTime = input.birthTimeStatus === "UNKNOWN" ? "00:00" : input.localTime;
   const calendar = calculateGate1BCalendar({ ...input, localTime: calendarTime, birthTimeStatus: "KNOWN" });
 
-  if (calendar.status === "BLOCKED_INVALID_INPUT" || calendar.status === "BLOCKED_MISSING_TIMEZONE" || calendar.status === "UNSUPPORTED_IN_V1" || calendar.status === "BLOCKED_UNAVAILABLE_BOUNDARY") {
+  if (
+    calendar.status === "BLOCKED_INVALID_INPUT" ||
+    calendar.status === "BLOCKED_MISSING_TIMEZONE" ||
+    calendar.status === "BLOCKED_INVALID_TIMEZONE" ||
+    calendar.status === "UNSUPPORTED_IN_V1" ||
+    calendar.status === "BLOCKED_UNAVAILABLE_BOUNDARY" ||
+    calendar.status === "BLOCKED_CALENDAR_YEAR_OUT_OF_RANGE" ||
+    calendar.status === "BLOCKED_SOLAR_TERM_DATA_UNAVAILABLE" ||
+    calendar.status === "BLOCKED_CALENDAR_SOURCE_UNAVAILABLE"
+  ) {
     return blocked(calendar.status, calendar.reasonCodes, [...trace, ...calendar.trace]);
   }
   if (calendar.status === "BLOCKED_MISSING_TIME") {

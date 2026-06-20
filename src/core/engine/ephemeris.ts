@@ -1,4 +1,28 @@
-export type SolarTermKey = "XIAO_HAN" | "LI_CHUN" | "JING_ZHE" | "QING_MING" | "LI_DONG" | "DA_XUE";
+export type SolarTermKey =
+  | "CHUN_FEN"
+  | "QING_MING"
+  | "GU_YU"
+  | "LI_XIA"
+  | "XIAO_MAN"
+  | "MANG_ZHONG"
+  | "XIA_ZHI"
+  | "XIAO_SHU"
+  | "DA_SHU"
+  | "LI_QIU"
+  | "CHU_SHU"
+  | "BAI_LU"
+  | "QIU_FEN"
+  | "HAN_LU"
+  | "SHUANG_JIANG"
+  | "LI_DONG"
+  | "XIAO_XUE"
+  | "DA_XUE"
+  | "DONG_ZHI"
+  | "XIAO_HAN"
+  | "DA_HAN"
+  | "LI_CHUN"
+  | "YU_SHUI"
+  | "JING_ZHE";
 
 export type JieSolarTermBoundary = {
   key: SolarTermKey;
@@ -24,9 +48,9 @@ export type EarthlyBranchKey =
   | "XU"
   | "HAI";
 
-export const CALENDAR_ENGINE = "f8sync-gate-1b-boundary-table";
-export const CALENDAR_ENGINE_VERSION = "gate-1b-boundary-table.v1";
-export const EPHEMERIS_DATA = "DE431-derived-boundary-fixtures";
+export const CALENDAR_ENGINE = "f8sync-production-solar-term-provider";
+export const CALENDAR_ENGINE_VERSION = "production-solar-term-provider.v1";
+export const EPHEMERIS_DATA = "solar-terms-1899-2101.v1";
 export const IANA_VERSION = "runtime-intl";
 
 const lockedGate1BBoundaries: JieSolarTermBoundary[] = [

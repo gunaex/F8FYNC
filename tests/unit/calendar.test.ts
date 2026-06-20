@@ -53,7 +53,7 @@ describe("Gate 1B calendar and solar-term foundation", () => {
   it("flags one-minute Li Chun boundary cases as disputed", () => {
     const result = calculateGate1BCalendar({
       localDate: "2000-02-04",
-      localTime: "19:39",
+      localTime: "19:40",
       birthTimeStatus: "KNOWN",
       timezoneId: "Asia/Bangkok",
       timezoneConfirmationStatus: "CONFIRMED"
@@ -102,7 +102,7 @@ describe("Gate 1B calendar and solar-term foundation", () => {
     });
 
     expect(suggested.status).toBe("BLOCKED_MISSING_TIMEZONE");
-    expect(invalid.status).toBe("BLOCKED_INVALID_INPUT");
+    expect(invalid.status).toBe("BLOCKED_INVALID_TIMEZONE");
   });
 
   it("keeps true solar time unsupported in Gate 1B V1", () => {
