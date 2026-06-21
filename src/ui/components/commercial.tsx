@@ -9,12 +9,14 @@ export function PricingCard({
   name,
   description,
   price,
+  billingLabel,
   cta
 }: {
   plan: SubscriptionPlan;
   name: string;
   description: string;
   price: string;
+  billingLabel: string;
   cta: string;
 }) {
   async function upgrade() {
@@ -29,6 +31,7 @@ export function PricingCard({
     <Card className="pricing-card">
       <span className="badge positive">{name}</span>
       <strong className="price-display">{price}</strong>
+      <span className="muted">{billingLabel}</span>
       <p className="muted">{description}</p>
       <Button type="button" onClick={upgrade}>{cta}</Button>
     </Card>

@@ -1,9 +1,10 @@
 "use client";
 
-import type { FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import type { FortuneQueryType, FortuneTargetType } from "@/core/domain";
 import { Button, Card, SelectField, TextAreaField, TextField } from "@/ui/primitives";
 import type { CanonicalBirthTimeStatus, CanonicalTimezoneConfirmationStatus } from "@/core/profile";
+import { partsFromIsoDate, sanitizeBirthYearInput, sanitizeNumericText, validateBirthDateParts, type BirthDateParts } from "./birth-date-input";
 
 export type AnalysisFormState = {
   birthDate: string;
@@ -32,7 +33,41 @@ export function BirthProfileForm({
   onSubmit: () => void;
   loading: boolean;
 }) {
-  const label = (key: string, fallback: string) => dictionary[key] ?? fallback;
+  const [birthDateParts, setBirthDateParts] = useState<BirthDateParts>(() => partsFromIsoDate(state.birthDate));
+  const [dateSubmitted, setDateSubmitted] = useState(false);
+  const dateValidation = useMemo(() => validateBirthDateParts(birthDateParts), [birthDateParts]);
+  const showDateError = dateSubmitted && dateValidation.status !== "VALID";
+  const canonicalBirthDate = dateValidation.status === "VALID" ? dateValidation.isoDate : "";
+  const buddhistYear = dateValidation.status === "VALID" ? dateValidation.buddhistYear : birthDateParts.year.length === 4 ? Number(birthDateParts.year) + 543 : null;
+  const labelFallbacks: Record<string, string> = {
+    birthDay: "วัน",
+    birthMonth: "เดือน",
+    birthYearGregorian: "ปี ค.ศ.",
+    chooseFromCalendar: "เลือกจากปฏิทิน",
+    birthDateErrorIncomplete: "กรุณากรอกปี ค.ศ. ให้ครบ 4 หลัก",
+    birthDateErrorInvalidDay: "วันที่ที่เลือกไม่ถูกต้อง",
+    birthDateErrorInvalidLeapDay: "วันที่ที่เลือกไม่ถูกต้อง",
+    birthDateErrorYearBelowRange: "ระบบรองรับปีเกิดตั้งแต่ ค.ศ. 1900",
+    birthDateErrorFuture: "ยังไม่สามารถเลือกวันเกิดในอนาคตได้",
+    birthDateErrorNonNumericYear: "กรุณากรอกปี ค.ศ. เป็นตัวเลข",
+    buddhistYearHelper: "ค.ศ. {gregorianYear} ตรงกับ พ.ศ. {buddhistYear}",
+    timezoneConfirmationStatus: "ยืนยันเขตเวลาเกิด",
+    timezoneConfirmed: "ยืนยันแล้ว",
+    timezoneSuggested: "ระบบแนะนำ",
+    timezoneUnresolved: "ยังไม่แน่ใจ",
+    timezoneUnknown: "ไม่ทราบ",
+    birthInputUnavailableDisclosure: "ผลบางส่วนจะยังไม่ครบจนกว่าจะมีเวลาเกิดและเขตเวลาที่เชื่อถือได้"
+  };
+  const label = (key: string, fallback: string) => {
+    const value = dictionary[key];
+    return value && !value.startsWith("form.") ? value : labelFallbacks[key] ?? fallback;
+  };
+  const formatLabel = (key: string, fallback: string, values: Record<string, string | number>) =>
+    Object.entries(values).reduce((text, [name, value]) => text.replace(`{${name}}`, String(value)), label(key, fallback));
+
+  useEffect(() => {
+    if (state.birthDate && state.birthDate !== canonicalBirthDate) setBirthDateParts(partsFromIsoDate(state.birthDate));
+  }, [canonicalBirthDate, state.birthDate]);
 
   function update<K extends keyof AnalysisFormState>(key: K, value: AnalysisFormState[K]) {
     const next = { ...state, [key]: value };
@@ -42,8 +77,31 @@ export function BirthProfileForm({
     }
   }
 
+  function updateBirthTime(value: string) {
+    const next = { ...state, birthTime: value, birthTimeStatus: value ? "KNOWN" as const : "UNKNOWN" as const };
+    onChange(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("f8sync:last-analysis", JSON.stringify({ queryType: next.queryType }));
+    }
+  }
+
+  function updateBirthDateParts(nextParts: BirthDateParts) {
+    setBirthDateParts(nextParts);
+    const validation = validateBirthDateParts(nextParts);
+    if (validation.status === "VALID") update("birthDate", validation.isoDate);
+  }
+
+  function updateCalendarDate(value: string) {
+    const nextParts = partsFromIsoDate(value);
+    setDateSubmitted(true);
+    updateBirthDateParts(nextParts);
+  }
+
   function submit(event: FormEvent) {
     event.preventDefault();
+    setDateSubmitted(true);
+    if (dateValidation.status !== "VALID") return;
+    if (state.birthDate !== dateValidation.isoDate) update("birthDate", dateValidation.isoDate);
     onSubmit();
   }
 
@@ -55,20 +113,69 @@ export function BirthProfileForm({
           <strong>{dictionary[`analysis.${state.queryType}`]}</strong>
         </div>
         <div className="field-grid">
-          <TextField id="birthDate" type="date" required label={dictionary.birthDate} value={state.birthDate} onChange={(event) => update("birthDate", event.target.value)} />
-          <SelectField id="birthTimeStatus" label={label("birthTimeStatus", "Birth time status")} value={state.birthTimeStatus} onChange={(event) => update("birthTimeStatus", event.target.value as CanonicalBirthTimeStatus)}>
-            <option value="KNOWN">{label("birthTimeKnown", "Known")}</option>
-            <option value="UNKNOWN">{label("birthTimeUnknown", "I do not know my birth time")}</option>
-            <option value="APPROXIMATE">{label("birthTimeApproximate", "Approximate")}</option>
-            <option value="DISPUTED">{label("birthTimeDisputed", "Disputed")}</option>
-          </SelectField>
+          <fieldset className="birth-date-field" aria-describedby={showDateError ? "birthDate-error" : buddhistYear ? "birthDate-helper" : undefined}>
+            <legend>{dictionary.birthDate}</legend>
+            <div className="birth-date-grid">
+              <TextField
+                id="birthDay"
+                type="text"
+                inputMode="numeric"
+                autoComplete="bday-day"
+                maxLength={2}
+                label={label("birthDay", "Day")}
+                value={birthDateParts.day}
+                onBlur={() => setDateSubmitted(true)}
+                onChange={(event) => updateBirthDateParts({ ...birthDateParts, day: sanitizeNumericText(event.target.value, 2) })}
+              />
+              <SelectField
+                id="birthMonth"
+                autoComplete="bday-month"
+                label={label("birthMonth", "Month")}
+                value={birthDateParts.month}
+                onBlur={() => setDateSubmitted(true)}
+                onChange={(event) => updateBirthDateParts({ ...birthDateParts, month: event.target.value })}
+              >
+                <option value="">{label("birthMonthPlaceholder", "Month")}</option>
+                {Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, "0")).map((month) => (
+                  <option key={month} value={month}>{label(`month.${month}`, month)}</option>
+                ))}
+              </SelectField>
+              <TextField
+                id="birthYear"
+                type="text"
+                inputMode="numeric"
+                autoComplete="bday-year"
+                maxLength={4}
+                label={label("birthYearGregorian", "Gregorian year")}
+                value={birthDateParts.year}
+                onBlur={() => setDateSubmitted(true)}
+                onChange={(event) => updateBirthDateParts({ ...birthDateParts, year: sanitizeBirthYearInput(event.target.value) })}
+              />
+            </div>
+            {buddhistYear && birthDateParts.year.length === 4 ? (
+              <p id="birthDate-helper" className="field-helper">
+                {formatLabel("buddhistYearHelper", "CE {gregorianYear} is BE {buddhistYear}", { gregorianYear: birthDateParts.year, buddhistYear })}
+              </p>
+            ) : null}
+            {showDateError ? <p id="birthDate-error" className="field-error" role="alert">{label(dateValidation.messageKey, "Invalid birth date")}</p> : null}
+            <div className="calendar-picker-row">
+              <label htmlFor="birthDateCalendar">{label("chooseFromCalendar", "Choose from calendar")}</label>
+              <input
+                id="birthDateCalendar"
+                type="date"
+                min="1900-01-01"
+                max={new Date().toISOString().slice(0, 10)}
+                value={canonicalBirthDate}
+                onChange={(event) => updateCalendarDate(event.target.value)}
+              />
+            </div>
+          </fieldset>
           <TextField
             id="birthTime"
             type="time"
             label={dictionary.birthTime}
-            value={state.birthTimeStatus === "UNKNOWN" ? "" : state.birthTime}
-            disabled={state.birthTimeStatus === "UNKNOWN"}
-            onChange={(event) => update("birthTime", event.target.value)}
+            value={state.birthTime}
+            onChange={(event) => updateBirthTime(event.target.value)}
           />
           <TextField id="birthLocation" label={dictionary.birthLocation} value={state.birthLocation} onChange={(event) => update("birthLocation", event.target.value)} />
           <TextField id="birthTimezone" required label={dictionary.birthTimezone} value={state.birthTimezone} onChange={(event) => update("birthTimezone", event.target.value)} />

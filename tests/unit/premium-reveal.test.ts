@@ -114,4 +114,16 @@ describe("premium reveal filtering", () => {
     expect(filtered.timing.allWindows).toHaveLength(1);
     expect(filtered.scores.career).toBe(80);
   });
+
+  it("returns full result for active yearly premium members", async () => {
+    const subscription = await activateMockSubscription("member_premium_yearly", "premium_yearly");
+    const filtered = await filterFortuneResultForEntitlement("member_premium_yearly", fullResult);
+    const periodStart = new Date(subscription.currentPeriodStart ?? "");
+    const periodEnd = new Date(subscription.currentPeriodEnd ?? "");
+
+    expect(filtered.premiumReveal.level).toBe("full");
+    expect(filtered.premiumReveal.planCode).toBe("premium_yearly");
+    expect(filtered.pluginResults).toHaveLength(1);
+    expect(periodEnd.getFullYear()).toBe(periodStart.getFullYear() + 1);
+  });
 });

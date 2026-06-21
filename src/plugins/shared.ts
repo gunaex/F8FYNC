@@ -14,6 +14,14 @@ export function clampScore(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
+export function contextDateSeed(input: FortuneRequest) {
+  return new Date(input.contextTime).toISOString().slice(0, 10);
+}
+
+export function contextHourSeed(input: FortuneRequest) {
+  return new Date(input.contextTime).toISOString().slice(0, 13);
+}
+
 export function buildWindow(
   input: FortuneRequest,
   pluginId: string,

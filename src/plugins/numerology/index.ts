@@ -1,6 +1,6 @@
 import type { FortunePlugin } from "@/plugin-sdk";
 import type { FortuneRequest } from "@/core/domain";
-import { baseResult, buildWindow, clampScore, stableNumber } from "../shared";
+import { baseResult, buildWindow, clampScore, contextDateSeed, stableNumber } from "../shared";
 
 function digitSum(value: string) {
   return value.replace(/\D/g, "").split("").reduce((sum, digit) => sum + Number(digit), 0);
@@ -27,7 +27,7 @@ export const numerologyPlugin: FortunePlugin = {
     const targetSignal = digitSum(targetValue) || stableNumber(targetValue || "general", 1, 54);
     const birthSignal = digitSum(input.birthProfile.birthDate);
     const harmony = 100 - Math.abs(((birthSignal * 3 + targetSignal * 5) % 100) - 58);
-    const base = clampScore((harmony + stableNumber(`${input.contextTime}:numerology`, 48, 84)) / 2);
+    const base = clampScore((harmony + stableNumber(`${contextDateSeed(input)}:numerology`, 48, 84)) / 2);
     return {
       ...baseResult(input, "numerology", "0.1.0", "mock-numerology-2026-06"),
       status: "success",

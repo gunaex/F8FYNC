@@ -36,7 +36,7 @@ const revealSections: Omit<PremiumRevealSection, "locked">[] = [
 ];
 
 export function resolveRevealLevel(planCode: string): ResultRevealLevel {
-  if (planCode === "premium") return "full";
+  if (planCode === "premium" || planCode === "premium_yearly") return "full";
   if (planCode === "free") return "partial";
   return "preview";
 }

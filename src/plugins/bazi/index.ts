@@ -1,6 +1,6 @@
 import type { FortunePlugin } from "@/plugin-sdk";
 import type { FortuneRequest } from "@/core/domain";
-import { baseResult, buildWindow, clampScore, stableNumber } from "../shared";
+import { baseResult, buildWindow, clampScore, contextDateSeed, stableNumber } from "../shared";
 
 export const baziPlugin: FortunePlugin = {
   manifest: {
@@ -19,7 +19,7 @@ export const baziPlugin: FortunePlugin = {
     return { valid: Boolean(input.birthProfile.birthDate && input.birthProfile.birthLocation), errors: [] };
   },
   async analyze(input) {
-    const seed = `${input.birthProfile.birthDate}|${input.birthProfile.birthTime ?? "12:00"}|${input.contextTime}|bazi`;
+    const seed = `${input.birthProfile.birthDate}|${input.birthProfile.birthTime ?? "UNKNOWN"}|${contextDateSeed(input)}|bazi`;
     const base = stableNumber(seed, 44, 88);
     return {
       ...baseResult(input, "bazi", "0.1.0", "mock-bazi-2026-06"),

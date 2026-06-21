@@ -234,6 +234,7 @@ a {
 .result-grid {
   display: grid;
   gap: var(--space-3);
+  align-items: start;
 }
 
 .analysis-form-card {
@@ -272,6 +273,84 @@ a {
   background: rgb(255 255 255 / 0.78);
   color: var(--color-text-primary);
   padding: 0.7rem 0.85rem;
+}
+
+.field select {
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--color-text-secondary) 50%) right 1rem center / 0.45rem 0.45rem no-repeat,
+    linear-gradient(135deg, var(--color-text-secondary) 50%, transparent 50%) right 0.72rem center / 0.45rem 0.45rem no-repeat,
+    rgb(255 255 255 / 0.78);
+  padding-right: 2.35rem;
+}
+
+.birth-date-field {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.birth-date-field legend {
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  font-weight: 650;
+  font-size: 0.92rem;
+}
+
+.birth-date-grid {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.75fr) minmax(10rem, 1.4fr) minmax(7rem, 1fr);
+  gap: var(--space-2);
+}
+
+.birth-date-grid .field {
+  min-width: 0;
+}
+
+.birth-date-grid .field input,
+.birth-date-grid .field select {
+  min-height: 46px;
+}
+
+.field-helper,
+.field-error {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.field-helper {
+  color: var(--color-text-secondary);
+}
+
+.field-error {
+  color: var(--color-status-risk);
+  font-weight: 650;
+}
+
+.calendar-picker-row {
+  display: grid;
+  gap: var(--space-2);
+  width: min(100%, 18rem);
+}
+
+.calendar-picker-row label {
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--color-accent-primary);
+}
+
+.calendar-picker-row input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgb(23 27 36 / 0.08);
+  border-radius: 0.85rem;
+  background: rgb(255 255 255 / 0.78);
+  color: var(--color-text-primary);
+  padding: 0.62rem 0.8rem;
 }
 
 .button-row {
@@ -478,6 +557,51 @@ a {
   padding-top: var(--space-3);
 }
 
+.source-lock-notice {
+  border: 1px solid rgb(23 27 36 / 0.08);
+  border-radius: 8px;
+  background: rgb(23 27 36 / 0.04);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-3);
+  padding: 0.75rem;
+  font-size: 0.88rem;
+}
+
+.source-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-top: 1px solid rgb(23 27 36 / 0.08);
+  padding-top: var(--space-3);
+}
+
+.source-item span {
+  border-radius: 999px;
+  background: rgb(22 122 101 / 0.1);
+  color: var(--color-status-positive);
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+.source-item.locked {
+  color: var(--color-text-secondary);
+  opacity: 0.72;
+}
+
+.source-item.locked span {
+  background: rgb(23 27 36 / 0.08);
+  color: var(--color-text-secondary);
+}
+
 .timeline {
   display: grid;
   gap: var(--space-3);
@@ -518,7 +642,7 @@ a {
   bottom: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-1);
   padding: var(--space-2);
   background: rgb(255 250 241 / 0.92);
@@ -643,6 +767,18 @@ a {
   display: grid;
   gap: var(--space-3);
   min-height: 16rem;
+}
+
+.boost-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  min-height: 14rem;
+}
+
+.boost-card h2 {
+  margin: 0;
+  font-size: 1.35rem;
 }
 
 .coupon-card {
@@ -914,7 +1050,7 @@ a {
 .f8sync-daily-heading {
   display: flex;
   gap: 0.65rem;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -1188,6 +1324,10 @@ a {
 }
 
 @media (max-width: 639px) {
+  .birth-date-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .f8sync-archetype-card {
     min-height: 172px;
     padding-right: 6rem;

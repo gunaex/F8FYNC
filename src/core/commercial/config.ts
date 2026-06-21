@@ -51,8 +51,21 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     status: "active",
     billingType: "monthly",
     currency: "THB",
-    priceMinor: 19900,
+    priceMinor: 4900,
     trialDays: 7,
+    entitlementSetId: "ent_premium",
+    createdAt: now,
+    updatedAt: now
+  },
+  {
+    id: "plan_premium_yearly",
+    code: "premium_yearly",
+    nameKey: "pricing.plans.premiumYearly.name",
+    descriptionKey: "pricing.plans.premiumYearly.description",
+    status: "active",
+    billingType: "yearly",
+    currency: "THB",
+    priceMinor: 47000,
     entitlementSetId: "ent_premium",
     createdAt: now,
     updatedAt: now
@@ -89,6 +102,18 @@ export const entitlementMatrix: Record<string, Record<FeatureKey, FeatureEntitle
     priority_processing: entitlement("priority_processing", false, "none")
   },
   premium: {
+    daily_insight: entitlement("daily_insight", true, "per_day", 100),
+    full_timeline: entitlement("full_timeline", true, "none"),
+    compatibility_analysis: entitlement("compatibility_analysis", true, "per_day", 30),
+    multi_system_comparison: entitlement("multi_system_comparison", true, "per_day", 30),
+    ai_interpretation: entitlement("ai_interpretation", true, "per_day", 30),
+    analysis_history: entitlement("analysis_history", true, "none", undefined, 365),
+    saved_profiles: entitlement("saved_profiles", true, "total", 10),
+    premium_plugins: entitlement("premium_plugins", true, "none"),
+    export_report: entitlement("export_report", false, "none"),
+    priority_processing: entitlement("priority_processing", true, "none")
+  },
+  premium_yearly: {
     daily_insight: entitlement("daily_insight", true, "per_day", 100),
     full_timeline: entitlement("full_timeline", true, "none"),
     compatibility_analysis: entitlement("compatibility_analysis", true, "per_day", 30),

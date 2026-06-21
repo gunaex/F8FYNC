@@ -10,7 +10,9 @@
     "view": "ดูรายละเอียด"
   },
   "nav": {
-    "home": "อินไซต์",
+    "home": "ดูดวง",
+    "fortune": "ดูดวง",
+    "boost": "เสริมดวง",
     "result": "ผลลัพธ์",
     "timeline": "ไทม์ไลน์",
     "compare": "เปรียบเทียบ",
@@ -52,9 +54,28 @@
   },
   "form": {
     "birthDate": "วันเกิด",
+    "birthDay": "วัน",
+    "birthMonth": "เดือน",
+    "birthYear": "ปี",
+    "birthYearGregorian": "ปี ค.ศ.",
+    "birthMonthPlaceholder": "เลือกเดือน",
+    "chooseFromCalendar": "เลือกจากปฏิทิน",
+    "birthDateErrorIncomplete": "กรุณากรอกปี ค.ศ. ให้ครบ 4 หลัก",
+    "birthDateErrorInvalidDay": "วันที่ที่เลือกไม่ถูกต้อง",
+    "birthDateErrorInvalidLeapDay": "วันที่ที่เลือกไม่ถูกต้อง",
+    "birthDateErrorYearBelowRange": "ระบบรองรับปีเกิดตั้งแต่ ค.ศ. 1900",
+    "birthDateErrorFuture": "ยังไม่สามารถเลือกวันเกิดในอนาคตได้",
+    "birthDateErrorNonNumericYear": "กรุณากรอกปี ค.ศ. เป็นตัวเลข",
+    "buddhistYearHelper": "ค.ศ. {gregorianYear} ตรงกับ พ.ศ. {buddhistYear}",
     "birthTime": "เวลาเกิด",
     "birthLocation": "สถานที่เกิด",
     "birthTimezone": "เขตเวลาเกิด",
+    "timezoneConfirmationStatus": "ยืนยันเขตเวลาเกิด",
+    "timezoneConfirmed": "ยืนยันแล้ว",
+    "timezoneSuggested": "ระบบแนะนำ",
+    "timezoneUnresolved": "ยังไม่แน่ใจ",
+    "timezoneUnknown": "ไม่ทราบ",
+    "birthInputUnavailableDisclosure": "ผลบางส่วนจะยังไม่ครบจนกว่าจะมีเวลาเกิดและเขตเวลาที่เชื่อถือได้",
     "contextTimezone": "เขตเวลาปัจจุบัน",
     "analysisType": "วันนี้อยากดูเรื่องอะไร",
     "targetType": "มีข้อมูลอะไรให้ดูประกอบไหม",
@@ -74,6 +95,20 @@
       "room_number": "เลขห้อง",
       "name": "ชื่อคนหรือชื่อแบรนด์",
       "event_datetime": "วันและเวลาของเหตุการณ์"
+    },
+    "month": {
+      "01": "มกราคม",
+      "02": "กุมภาพันธ์",
+      "03": "มีนาคม",
+      "04": "เมษายน",
+      "05": "พฤษภาคม",
+      "06": "มิถุนายน",
+      "07": "กรกฎาคม",
+      "08": "สิงหาคม",
+      "09": "กันยายน",
+      "10": "ตุลาคม",
+      "11": "พฤศจิกายน",
+      "12": "ธันวาคม"
     }
   },
   "result": {
@@ -90,6 +125,9 @@
     "warnings": "ข้อควรระวัง",
     "recommendations": "คำแนะนำ",
     "sources": "ระบบที่ใช้วิเคราะห์",
+    "sourceLocked": "ล็อก",
+    "sourceReady": "พร้อมใช้งาน",
+    "subscriptionRequired": "สมัครสมาชิกเพื่อใช้ฟังก์ชันเต็ม",
     "conflicts": "สัญญาณที่ไม่ตรงกัน",
     "viewTimeline": "ดูไทม์ไลน์วันนี้",
     "aiExplanation": "คำอธิบายเพิ่มเติม",
@@ -110,6 +148,12 @@
     "subtitle": "เริ่มใช้ฟรี และพร้อมอัปเกรดเมื่ออยากใช้ฟีเจอร์เชิงลึกมากขึ้น",
     "monthly": "รายเดือน",
     "yearly": "รายปี",
+    "billing": {
+      "free": "ใช้ฟรี",
+      "monthly": "49 บาทต่อเดือน ยกเลิกได้ทุกเมื่อ",
+      "yearly": "รายปี ลดประมาณ 20%",
+      "one_time": "ชำระครั้งเดียว"
+    },
     "upgrade": "อัปเกรด",
     "manage": "จัดการแพ็กเกจ",
     "faq": "คำถามที่พบบ่อย",
@@ -117,7 +161,27 @@
     "plans": {
       "guest": { "name": "Guest", "description": "ทดลองใช้อินไซต์พื้นฐานแบบจำกัด" },
       "free": { "name": "Free", "description": "เหมาะสำหรับการใช้งานส่วนตัวเบื้องต้น" },
-      "premium": { "name": "Premium", "description": "สำหรับการวิเคราะห์เต็มรูปแบบและประวัติที่ยาวขึ้น" }
+      "premium": { "name": "Premium รายเดือน", "description": "ปลดล็อกผลเต็ม ฟีเจอร์เชิงลึก และประวัติที่ยาวขึ้น" },
+      "premiumYearly": { "name": "Premium รายปี", "description": "เหมาะสำหรับใช้งานต่อเนื่อง จ่ายครั้งเดียวประหยัดกว่ารายเดือน" }
+    }
+  },
+  "boost": {
+    "title": "เสริมดวงและเครื่องมือพรีเมียม",
+    "subtitle": "พื้นที่สำหรับแพ็กเกจ รายงาน ไพ่ และสินค้าเสริมที่ต่อยอดจากผลวิเคราะห์ของคุณ",
+    "available": "พร้อมใช้งาน",
+    "comingSoon": "กำลังเตรียม",
+    "viewPlans": "ดูแพ็กเกจ",
+    "premium": {
+      "title": "Premium 49 บาท/เดือน",
+      "description": "เปิดผลวิเคราะห์เต็ม ใช้ฟีเจอร์เชิงลึก และยกเลิกได้ทุกเมื่อ"
+    },
+    "tarot": {
+      "title": "ไพ่ Tarot ต้นฉบับ",
+      "description": "เมนูสำหรับไพ่ original ของคุณ เหมาะกับการอ่านแบบรายวัน คำถามเฉพาะเรื่อง หรือ ritual content ในอนาคต"
+    },
+    "report": {
+      "title": "รายงานส่วนตัว",
+      "description": "ต่อยอดเป็นรายงาน PDF หรือคำแนะนำเฉพาะช่วงเวลา โดยใช้ข้อมูลที่ระบบอนุญาตแล้วเท่านั้น"
     }
   },
   "subscription": {

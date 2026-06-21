@@ -1,6 +1,6 @@
 import type { FortunePlugin } from "@/plugin-sdk";
 import type { FortuneRequest } from "@/core/domain";
-import { baseResult, buildWindow, clampScore, stableNumber } from "../shared";
+import { baseResult, buildWindow, clampScore, contextHourSeed, stableNumber } from "../shared";
 
 export const timingPlugin: FortunePlugin = {
   manifest: {
@@ -20,7 +20,7 @@ export const timingPlugin: FortunePlugin = {
   },
   async analyze(input) {
     const hour = new Date(input.contextTime).getUTCHours();
-    const cycle = stableNumber(`${input.contextTimezone}:${hour}:timing`, 48, 91);
+    const cycle = stableNumber(`${input.contextTimezone}:${contextHourSeed(input)}:timing`, 48, 91);
     return {
       ...baseResult(input, "timing", "0.1.0", "mock-timing-2026-06"),
       status: "success",

@@ -2,6 +2,12 @@
 
 import { useMemo, useState } from "react";
 import type { AggregatedFortuneResult, SupportedLocale } from "@/core/domain";
+import { buildBaziStructureProfile } from "@/core/engine/elements";
+import { getHiddenStems } from "@/core/engine/hidden-stems";
+import { buildIdentityLayer } from "@/core/engine/identity";
+import { calculateFourPillars, type FourPillarsBlockedResult, type FourPillarsReadyResult } from "@/core/engine/pillars";
+import { stemBranch, type StemBranch } from "@/core/engine/stems-branches";
+import { getStemElement, getStemPolarity, type FiveElement } from "@/core/engine/ten-gods";
 import { t } from "@/i18n";
 import {
   BirthProfileForm,
@@ -37,9 +43,9 @@ type AIOutput = {
 };
 
 const initialState: AnalysisFormState = {
-  birthDate: "1990-01-01",
-  birthTime: "10:30",
-  birthTimeStatus: "KNOWN",
+  birthDate: "",
+  birthTime: "",
+  birthTimeStatus: "UNKNOWN",
   birthLocation: "Bangkok, Thailand",
   birthTimezone: "Asia/Bangkok",
   timezoneConfirmationStatus: "CONFIRMED",
@@ -50,98 +56,201 @@ const initialState: AnalysisFormState = {
   objective: ""
 };
 
+const elementLabels: Record<FiveElement, string> = {
+  WOOD: "ไม้",
+  FIRE: "ไฟ",
+  EARTH: "ดิน",
+  METAL: "ทอง",
+  WATER: "น้ำ"
+};
+
+const animalLabels: Record<StemBranch["branch"], string> = {
+  ZI: "หนู",
+  CHOU: "วัว",
+  YIN: "เสือ",
+  MAO: "กระต่าย",
+  CHEN: "มังกร",
+  SI: "งู",
+  WU: "ม้า",
+  WEI: "แพะ",
+  SHEN: "ลิง",
+  YOU: "ไก่",
+  XU: "สุนัข",
+  HAI: "หมู"
+};
+
+const polarityLabels: Record<ReturnType<typeof getStemPolarity>, string> = {
+  YANG: "หยาง",
+  YIN: "หยิน"
+};
+
+function stemLabelTh(stem: StemBranch["stem"]) {
+  return `${elementLabels[getStemElement(stem)]}${polarityLabels[getStemPolarity(stem)]}`;
+}
+
+function hiddenRoleTh(role: ReturnType<typeof getHiddenStems>[number]["role"]) {
+  if (role === "MAIN") return "หลัก";
+  if (role === "MID") return "รอง";
+  return "เล็กน้อย";
+}
+
+function elementStatus(percentage: number): "เด่นมาก" | "เด่น" | "สมดุล" | "ควรเสริม" {
+  if (percentage >= 28) return "เด่นมาก";
+  if (percentage >= 22) return "เด่น";
+  if (percentage >= 15) return "สมดุล";
+  return "ควรเสริม";
+}
+
+function mapPillar(
+  key: F8SyncPillarKey,
+  labelTh: "ปี" | "เดือน" | "วัน" | "ชั่วโมง",
+  value: StemBranch | "UNKNOWN",
+  state: "KNOWN" | "UNKNOWN" | "BOUNDARY_DISPUTED",
+  alternatives?: string[]
+): F8SyncDashboardViewModel["pillars"][number] {
+  if (value === "UNKNOWN") return { key, labelTh, state, alternatives };
+  return {
+    key,
+    labelTh,
+    state,
+    stemChinese: value.stemChinese,
+    stemLabelTh: stemLabelTh(value.stem),
+    branchChinese: value.branchChinese,
+    branchLabelTh: elementLabels[getStemElement(getHiddenStems(value.branch)[0].stem)],
+    animalTh: animalLabels[value.branch],
+    hiddenStems: getHiddenStems(value.branch).map((hidden) => {
+      const hiddenStem = stemBranch(hidden.stem, value.branch);
+      return {
+        stemChinese: hiddenStem.stemChinese,
+        label: hiddenStem.stemName,
+        elementTh: stemLabelTh(hidden.stem),
+        roleTh: hiddenRoleTh(hidden.role)
+      };
+    }),
+    alternatives
+  };
+}
+
+function mapElements(profile: ReturnType<typeof buildBaziStructureProfile>): F8SyncDashboardViewModel["elements"] {
+  return (["WOOD", "FIRE", "EARTH", "METAL", "WATER"] as const).map((key) => ({
+    key,
+    labelTh: elementLabels[key],
+    percentage: Math.round(profile.elementDistribution[key].percentage),
+    statusTh: elementStatus(profile.elementDistribution[key].percentage)
+  }));
+}
+
+function dailyLabel(formState: AnalysisFormState) {
+  if (!formState.birthDate) return "ยังไม่ได้เลือกวันเกิด";
+  return new Intl.DateTimeFormat("th-TH", { day: "numeric", month: "short", year: "numeric" }).format(new Date(`${formState.birthDate}T00:00:00`));
+}
+
+function blockedCopy(result: FourPillarsBlockedResult) {
+  if (result.reasonCodes.includes("LOCKED_GATE_1B_BOUNDARY_NOT_AVAILABLE")) {
+    return {
+      headline: "ยังคำนวณปีนี้ไม่ได้",
+      summary: "มีเวลาเกิดแล้ว แต่ยังไม่มีข้อมูลขอบเขตปฏิทินสำหรับปีที่เลือก",
+      partial: "ยังไม่มีข้อมูล solar-term ที่ล็อกไว้สำหรับปีนี้ จึงยังคำนวณ BaZi เต็มไม่ได้"
+    };
+  }
+  if (result.reasonCodes.includes("CONFIRMED_IANA_TIMEZONE_REQUIRED") || result.status === "BLOCKED_MISSING_TIMEZONE") {
+    return {
+      headline: "ต้องยืนยันเขตเวลาก่อน",
+      summary: "กรุณาตรวจสอบเขตเวลาเกิดให้เป็น IANA timezone ที่ถูกต้อง",
+      partial: "ยังคำนวณไม่ได้จนกว่าเขตเวลาเกิดจะถูกต้องและยืนยันแล้ว"
+    };
+  }
+  return {
+    headline: "ข้อมูลยังไม่พอสำหรับการคำนวณ",
+    summary: "ตรวจสอบวันเกิด เวลาเกิด สถานที่เกิด และเขตเวลาอีกครั้ง",
+    partial: "ผลบางส่วน — กรุณาตรวจสอบข้อมูลวันเกิดและเขตเวลา"
+  };
+}
+
+function blockedViewModel(formState: AnalysisFormState, loading: boolean, result: FourPillarsBlockedResult): F8SyncDashboardViewModel {
+  const copy = blockedCopy(result);
+  return {
+    state: loading ? "LOADING" : "PARTIAL",
+    archetype: {
+      id: "ARCH-02",
+      nameTh: "ต้นกล้า",
+      element: "WOOD",
+      strength: "WEAK",
+      summary: "ต้องกรอกวันเกิดและเขตเวลาให้ถูกต้องก่อน",
+      descriptionParagraphs: ["ยังไม่สามารถคำนวณโครงสร้างหลักได้จากข้อมูลปัจจุบัน"],
+      strengths: [],
+      cautions: [],
+      methodologyDisclosure: "คำแนะนำจริงขึ้นอยู่กับสมดุลโดยรวมของดวง"
+    },
+    pillars: [
+      { key: "year", labelTh: "ปี", state: "UNKNOWN" },
+      { key: "month", labelTh: "เดือน", state: "UNKNOWN" },
+      { key: "day", labelTh: "วัน", state: "UNKNOWN" },
+      { key: "hour", labelTh: "ชั่วโมง", state: "UNKNOWN" }
+    ],
+    elements: (["WOOD", "FIRE", "EARTH", "METAL", "WATER"] as const).map((key) => ({ key, labelTh: elementLabels[key], percentage: 0, statusTh: "ควรเสริม" })),
+    daily: {
+      localDateLabel: dailyLabel(formState),
+      timezoneLabel: formState.contextTimezone === "Asia/Bangkok" ? "กรุงเทพฯ" : formState.contextTimezone,
+      headline: copy.headline,
+      statusTag: "พลังเป็นกลาง",
+      summary: copy.summary,
+      activities: ["ตรวจสอบข้อมูล", "กรอกใหม่"],
+      detail: "ยังไม่สามารถแสดงรายละเอียดได้"
+    },
+    disclosures: {
+      partial: copy.partial
+    }
+  };
+}
+
 function buildF8SyncViewModel(formState: AnalysisFormState, loading: boolean): F8SyncDashboardViewModel {
-  const state = loading ? "LOADING" : formState.birthTimeStatus === "UNKNOWN" ? "PARTIAL" : formState.birthTimeStatus === "DISPUTED" ? "DISPUTED" : "FULL";
-  const hourState = state === "PARTIAL" ? "UNKNOWN" : state === "DISPUTED" ? "BOUNDARY_DISPUTED" : "KNOWN";
+  if (!formState.birthDate) {
+    return blockedViewModel(formState, loading, {
+      status: "BLOCKED_INVALID_INPUT",
+      reasonCodes: ["LOCAL_DATE_INCOMPLETE"],
+      trace: ["Birth date incomplete"]
+    });
+  }
+
+  const pillars = calculateFourPillars({
+    localDate: formState.birthDate,
+    localTime: formState.birthTime || null,
+    birthTimeStatus: formState.birthTime ? "KNOWN" : "UNKNOWN",
+    timezoneId: formState.birthTimezone,
+    timezoneConfirmationStatus: formState.timezoneConfirmationStatus
+  });
+
+  if (!("yearPillar" in pillars)) return blockedViewModel(formState, loading, pillars);
+
+  const profile = buildBaziStructureProfile(pillars);
+  const identity = buildIdentityLayer(profile);
+  const state = loading ? "LOADING" : pillars.status === "BOUNDARY_DISPUTED" ? "DISPUTED" : pillars.chartType === "THREE_PILLAR_PARTIAL" ? "PARTIAL" : "FULL";
+  const hourState = pillars.status === "BOUNDARY_DISPUTED" ? "BOUNDARY_DISPUTED" : pillars.hourPillar === "UNKNOWN" ? "UNKNOWN" : "KNOWN";
+  const alternatives = pillars.boundaryFlags.length ? pillars.boundaryFlags.map((flag) => `${flag.boundaryType} ${flag.solarTerm}: 2 ตัวเลือก`) : undefined;
 
   return {
     state,
     archetype: {
-      id: "ARCH-09",
-      nameTh: "มหาสมุทร",
-      element: "WATER",
-      strength: "STRONG",
-      summary: "ลึก กว้าง และเคลื่อนไหวอยู่เสมอ",
-      descriptionParagraphs: [
-        "คุณมักคิดเป็นภาพใหญ่ และเชื่อมโยงเรื่องที่คนอื่นมองว่าไม่เกี่ยวกันได้ดี เวลาสถานการณ์เปลี่ยน คุณปรับตัวได้ค่อนข้างเร็ว",
-        "คนอื่นอาจมองว่าคุณนิ่ง แต่ข้างในมักมีทั้งความคิด แผน และคำถามอยู่หลายชั้น บางครั้งจึงคิดนานกว่าจะเริ่มลงมือ"
-      ],
-      strengths: ["คิดเป็นภาพใหญ่และมองเห็นความเชื่อมโยงที่ซับซ้อน", "ปรับตัวได้ดีเมื่อสถานการณ์เปลี่ยน", "มักจับทิศทางของสถานการณ์ได้ไว", "เชื่อมโยงผู้คนและความคิดเข้าหากันได้ดี"],
-      cautions: ["คุณคิดได้ลึก แต่บางครั้งคิดนานเกินไปจนเป็นอุปสรรคในการลงมือทำ", "ลองหาเวลาพักจากความคิดบ้าง"],
-      supportGuidance: ["ทอง — เพิ่มความชัดเจนและทิศทาง", "ไม้ — ช่วยระบายและใช้พลังที่มีอยู่"],
+      id: identity.archetype.id,
+      nameTh: identity.archetype.nameTh,
+      element: identity.archetype.element,
+      strength: identity.archetype.strength,
+      summary: identity.archetype.nameTh,
+      descriptionParagraphs: [],
+      strengths: [],
+      cautions: [],
       methodologyDisclosure: "คำแนะนำจริงขึ้นอยู่กับสมดุลโดยรวมของดวง"
     },
     pillars: [
-      {
-        key: "year",
-        labelTh: "ปี",
-        state: "KNOWN",
-        stemChinese: "庚",
-        stemLabelTh: "โลหะหยาง",
-        branchChinese: "辰",
-        branchLabelTh: "ดิน",
-        animalTh: "มังกร",
-        hiddenStems: [
-          { stemChinese: "戊", label: "Wu", elementTh: "ดินหยาง", roleTh: "หลัก" },
-          { stemChinese: "乙", label: "Yi", elementTh: "ไม้หยิน", roleTh: "รอง" },
-          { stemChinese: "癸", label: "Gui", elementTh: "น้ำหยิน", roleTh: "เล็กน้อย" }
-        ]
-      },
-      {
-        key: "month",
-        labelTh: "เดือน",
-        state: "KNOWN",
-        stemChinese: "丁",
-        stemLabelTh: "ไฟหยิน",
-        branchChinese: "亥",
-        branchLabelTh: "น้ำ",
-        animalTh: "หมู",
-        hiddenStems: [
-          { stemChinese: "壬", label: "Ren", elementTh: "น้ำหยาง", roleTh: "หลัก" },
-          { stemChinese: "甲", label: "Jia", elementTh: "ไม้หยาง", roleTh: "รอง" }
-        ]
-      },
-      {
-        key: "day",
-        labelTh: "วัน",
-        state: "KNOWN",
-        stemChinese: "甲",
-        stemLabelTh: "ไม้หยาง",
-        branchChinese: "戌",
-        branchLabelTh: "ดิน",
-        animalTh: "สุนัข",
-        hiddenStems: [
-          { stemChinese: "戊", label: "Wu", elementTh: "ดินหยาง", roleTh: "หลัก" },
-          { stemChinese: "辛", label: "Xin", elementTh: "ทองหยิน", roleTh: "รอง" },
-          { stemChinese: "丁", label: "Ding", elementTh: "ไฟหยิน", roleTh: "เล็กน้อย" }
-        ]
-      },
-      {
-        key: "hour",
-        labelTh: "ชั่วโมง",
-        state: hourState,
-        stemChinese: hourState === "KNOWN" ? "戊" : undefined,
-        stemLabelTh: hourState === "KNOWN" ? "ดินหยาง" : undefined,
-        branchChinese: hourState === "KNOWN" ? "辰" : undefined,
-        branchLabelTh: hourState === "KNOWN" ? "ดิน" : undefined,
-        animalTh: hourState === "KNOWN" ? "มังกร" : undefined,
-        hiddenStems: hourState === "KNOWN" ? [
-          { stemChinese: "戊", label: "Wu", elementTh: "ดินหยาง", roleTh: "หลัก" },
-          { stemChinese: "乙", label: "Yi", elementTh: "ไม้หยิน", roleTh: "รอง" },
-          { stemChinese: "癸", label: "Gui", elementTh: "น้ำหยิน", roleTh: "เล็กน้อย" }
-        ] : undefined,
-        alternatives: hourState === "BOUNDARY_DISPUTED" ? ["ตัวเลือกก่อนขอบเขต", "ตัวเลือกหลังขอบเขต"] : undefined
-      }
+      mapPillar("year", "ปี", pillars.yearPillar, "KNOWN"),
+      mapPillar("month", "เดือน", pillars.monthPillar, pillars.status === "BOUNDARY_DISPUTED" ? "BOUNDARY_DISPUTED" : "KNOWN", alternatives),
+      mapPillar("day", "วัน", pillars.dayPillar, "KNOWN"),
+      mapPillar("hour", "ชั่วโมง", pillars.hourPillar, hourState, alternatives)
     ],
-    elements: [
-      { key: "WOOD", labelTh: "ไม้", percentage: state === "PARTIAL" ? 24 : 22, statusTh: "เด่น" },
-      { key: "FIRE", labelTh: "ไฟ", percentage: state === "PARTIAL" ? 14 : 16, statusTh: state === "PARTIAL" ? "ควรเสริม" : "สมดุล" },
-      { key: "EARTH", labelTh: "ดิน", percentage: state === "PARTIAL" ? 28 : 30, statusTh: "เด่นมาก" },
-      { key: "METAL", labelTh: "ทอง", percentage: state === "PARTIAL" ? 12 : 13, statusTh: "ควรเสริม" },
-      { key: "WATER", labelTh: "น้ำ", percentage: state === "PARTIAL" ? 22 : 19, statusTh: "สมดุล" }
-    ],
+    elements: mapElements(profile),
     daily: {
-      localDateLabel: "18 มิ.ย. 2026",
+      localDateLabel: dailyLabel(formState),
       timezoneLabel: formState.contextTimezone === "Asia/Bangkok" ? "กรุงเทพฯ" : formState.contextTimezone,
       headline: "พลังไม้สนับสนุนคุณวันนี้",
       statusTag: "จังหวะสนับสนุน",
@@ -158,6 +267,7 @@ function buildF8SyncViewModel(formState: AnalysisFormState, loading: boolean): F
 
 export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLocale; dictionary: Record<string, unknown> }) {
   const [formState, setFormState] = useState(initialState);
+  const [analysisContextTime] = useState(() => new Date().toISOString());
   const [result, setResult] = useState<AggregatedFortuneResult | null>(null);
   const [ai, setAi] = useState<AIOutput | null>(null);
   const [explanationQuestion, setExplanationQuestion] = useState("");
@@ -169,9 +279,11 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
   const flatForm = useMemo(() => {
     const keys = [
       "birthDate", "birthTime", "birthLocation", "birthTimezone", "contextTimezone", "analysisType", "targetType",
-      "birthTimeStatus", "birthTimeKnown", "birthTimeUnknown", "birthTimeApproximate", "birthTimeDisputed",
       "timezoneConfirmationStatus", "timezoneConfirmed", "timezoneSuggested", "timezoneUnresolved", "timezoneUnknown",
-      "birthInputUnavailableDisclosure",
+      "birthInputUnavailableDisclosure", "birthDay", "birthMonth", "birthYearGregorian", "birthMonthPlaceholder", "chooseFromCalendar",
+      "birthDateErrorIncomplete", "birthDateErrorInvalidDay", "birthDateErrorInvalidLeapDay", "birthDateErrorYearBelowRange",
+      "birthDateErrorFuture", "birthDateErrorNonNumericYear", "buddhistYearHelper",
+      "month.01", "month.02", "month.03", "month.04", "month.05", "month.06", "month.07", "month.08", "month.09", "month.10", "month.11", "month.12",
       "targetValue", "objective", "analysis.daily", "analysis.timing", "analysis.compatibility", "analysis.comparison",
       "target.general", "target.phone_number", "target.vehicle_plate", "target.house_number", "target.room_number",
       "target.name", "target.event_datetime", "loading", "run", "clear"
@@ -190,11 +302,11 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
         queryType: formState.queryType,
         birthProfile: {
           birthDate: formState.birthDate,
-          birthTime: formState.birthTimeStatus === "UNKNOWN" ? undefined : formState.birthTime || undefined,
+          birthTime: formState.birthTime || undefined,
           birthLocation: formState.birthLocation,
           birthTimezone: formState.birthTimezone
         },
-        contextTime: new Date().toISOString(),
+        contextTime: analysisContextTime,
         contextTimezone: formState.contextTimezone,
         target: { type: formState.targetType, value: formState.targetValue },
         objective: formState.objective || undefined
@@ -317,7 +429,15 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
             <RecommendationCard title={t(dictionary, "result.recommendations")} items={result.recommendations.map((item) => t(dictionary, item.messageKey, item.parameters))} />
             {result.warnings.length ? <RecommendationCard title={t(dictionary, "result.warnings")} items={result.warnings.map((item) => t(dictionary, item.messageKey, item.parameters))} /> : null}
             {result.conflicts.length ? <RecommendationCard title={t(dictionary, "result.conflicts")} items={result.conflicts.map((item) => t(dictionary, item.descriptionKey))} /> : null}
-            <SystemSourceCard title={t(dictionary, "result.sources")} sources={result.sources} />
+            <SystemSourceCard
+              title={t(dictionary, "result.sources")}
+              sources={result.sources}
+              labels={{
+                locked: t(dictionary, "result.sourceLocked"),
+                unlocked: t(dictionary, "result.sourceReady"),
+                subscriptionRequired: t(dictionary, "result.subscriptionRequired")
+              }}
+            />
             <div className="card">
               <h2 className="section-title">{t(dictionary, "result.viewTimeline")}</h2>
               <Timeline windows={result.timing.allWindows} locale={locale} timezone={result.metadata.contextTimezone} labels={timingLabels} />

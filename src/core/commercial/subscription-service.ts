@@ -28,7 +28,11 @@ export async function activateMockSubscription(memberId: string, planCode = "pre
     item.updatedAt = now.toISOString();
   }
   const periodEnd = new Date(now);
-  periodEnd.setMonth(periodEnd.getMonth() + 1);
+  if (plan.billingType === "yearly") {
+    periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+  } else {
+    periodEnd.setMonth(periodEnd.getMonth() + 1);
+  }
   const subscription: MemberSubscription = {
     id: createId("subscription"),
     memberId,

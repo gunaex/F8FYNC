@@ -38,10 +38,9 @@ export function AppShell({ locale, dictionary, children }: { locale: SupportedLo
       </header>
       <main className="main-content">{children}</main>
       <nav className="bottom-nav" aria-label="Primary">
-        <Link href={`/${locale}`}><span aria-hidden="true">◇</span>{read(dictionary, "nav.home")}</Link>
-        <Link href={`/${locale}/pricing`}><span aria-hidden="true">◎</span>{read(dictionary, "nav.pricing")}</Link>
+        <Link href={`/${locale}`}><span aria-hidden="true">◇</span>{read(dictionary, "nav.fortune")}</Link>
+        <Link href={`/${locale}/boost`}><span aria-hidden="true">◎</span>{read(dictionary, "nav.boost")}</Link>
         <Link href={`/${locale}/timeline`}><span aria-hidden="true">▥</span>{read(dictionary, "nav.timeline")}</Link>
-        <Link href={`/${locale}/history`}><span aria-hidden="true">▤</span>{read(dictionary, "nav.history")}</Link>
         <Link href={`/${locale}/account`}><span aria-hidden="true">◌</span>{read(dictionary, "nav.account")}</Link>
       </nav>
     </div>

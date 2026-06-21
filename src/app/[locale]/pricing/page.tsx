@@ -23,6 +23,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
             name={t(dictionary, plan.nameKey)}
             description={t(dictionary, plan.descriptionKey)}
             price={plan.priceMinor === 0 ? formatter.format(0) : formatter.format(plan.priceMinor / 100)}
+            billingLabel={t(dictionary, `pricing.billing.${plan.billingType}`)}
             cta={t(dictionary, "pricing.upgrade")}
           />
         ))}
