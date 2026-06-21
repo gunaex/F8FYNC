@@ -1,0 +1,96 @@
+# MAJOR ARCANA — Fate & Myth Layer
+
+0. The Fool → Pan Feng (พัวหอง)
+I. The Magician → Huang Yaoshi (อึ้งยาซือ)
+II. The High Priestess → Abbess Miejue (แม่ชีมิกจ้อ)
+III. The Empress → Huang Rong (อึ้งย้ง)
+IV. The Emperor → Kublai Khan (กุบไลข่าน)
+V. The Hierophant → Zhang Sanfeng (เตียซำฮง)
+VI. The Lovers → Yang Guo & Xiaolongnu (เอี้ยก๊วย & เซียวเหล่งนึ่ง)
+VII. The Chariot → Guo Jing (ก๊วยเจ๋ง)
+VIII. Justice → Bao Zheng (เปาบุ้นจิ้น)
+IX. The Hermit → Ouyang Feng (อาวเอี้ยงฮง)
+X. Wheel of Fortune → Wheel of Martial Destiny (ยุทธจักรแห่งโชคชะตา)
+XI. Strength → Jueyuan (หลวงจีนกั๊กเอี้ยง)
+XII. The Hanged Man → Duan Yu (ต้วนอื้อ)
+XIII. Death → Li Mochou (ลี้มกโช้ว)
+XIV. Temperance → Yideng (อิดเต็งไต้ซือ)
+XV. The Devil → Dongfang Bubai (ตงฟางปุ๊ป้าย)
+XVI. The Tower → Fall of Xiangyang (การล่มสลายเซียงหยาง)
+XVII. The Star → Xiaojian (เซียวเจี๋ยว)
+XVIII. The Moon → Peach Blossom Island Illusion Array (เกาะดอกท้อ)
+XIX. The Sun → Zhang Wuji (เตียบ่อกี้)
+XX. Judgement → Mount Hua Martial Assembly (หัวซาน)
+XXI. The World → Xuanzang (พระถังซำจั๋ง)
+
+# CUPS SUIT — Emotion & Relationship
+
+Ace of Cups → First Love / Spirit Awakening (รักแรก)
+Two of Cups → Yang Guo & Xiaolongnu (ความรักนิรันดร์)
+Three of Cups → Brotherhood Celebration in Martial World (งานรวมมิตรสำนัก)
+Four of Cups → Emotional Dissatisfaction Monk (นักบวชเบื่อโลก)
+Five of Cups → Lost Love in Martial War (ความรักสูญเสีย)
+Six of Cups → Childhood in Martial Sect (ความทรงจำวัยเด็ก)
+Seven of Cups → Illusion of Desire in Jianghu (ภาพลวงตาความรัก)
+Eight of Cups → Leaving Sect for Inner Truth (เดินจากไป)
+Nine of Cups → Fulfilled Desire in Hidden Valley (ความสุขสมหวัง)
+Ten of Cups → Perfect Martial Family Harmony (ครอบครัวจอมยุทธ์สมบูรณ์)
+
+Page of Cups → Young Disciple of Emotion (ศิษย์หนุ่มผู้ใสซื่อ)
+Knight of Cups → Romantic Wandering Swordsman (นักดาบโรแมนติก)
+Queen of Cups → Jade Lotus Empress of Emotion (ราชินีจิตใจบริสุทธิ์)
+King of Cups → Ocean-Bound Sect Leader of Wisdom (ผู้นำผู้ควบคุมอารมณ์)
+
+# WANDS SUIT — Power & Martial Energy
+
+Ace of Wands → Birth of Inner Qi Flame (พลังเริ่มต้น)
+Two of Wands → Decision of Martial Path (เลือกเส้นทางยุทธภพ)
+Three of Wands → Expansion of Martial Sect (ขยายสำนัก)
+Four of Wands → Sect Victory Celebration (ฉลองชัย)
+Five of Wands → Martial Rival Conflict (การประลอง)
+Six of Wands → Hero Returns in Glory (ชัยชนะวีรบุรุษ)
+Seven of Wands → Defense of Sect Gate (ป้องกันสำนัก)
+Eight of Wands → Swift Martial Movement Technique (วิชาเคลื่อนที่เร็ว)
+Nine of Wands → Wounded Warrior Standing Firm (นักรบบาดเจ็บแต่ยืนหยัด)
+Ten of Wands → Burden of Martial Responsibility (ภาระหนัก)
+
+Page of Wands → Young Fire Disciple (ศิษย์ไฟ)
+Knight of Wands → Charging Flame Warrior (นักรบพุ่งทะยาน)
+Queen of Wands → Phoenix Empress of Fire Sect (ราชินีเพลิง)
+King of Wands → Flame Emperor of Martial Kingdom (จักรพรรดิไฟ)
+
+# SWORDS SUIT — Conflict & Truth
+
+Ace of Swords → Sword of Truth Revelation (ดาบแห่งความจริง)
+Two of Swords → Blind Martial Choice (การตัดสินใจมืดบอด)
+Three of Swords → Heart Break Betrayal (หักหลังรัก)
+Four of Swords → Martial Retreat Meditation (พักรบ)
+Five of Swords → Dishonorable Victory (ชัยชนะไม่ยุติธรรม)
+Six of Swords → Escape from War Zone (หนีสงคราม)
+Seven of Swords → Secret Betrayal in Sect (หักหลังลับ)
+Eight of Swords → Trapped by Martial Fate (ถูกพันธนาการ)
+Nine of Swords → Nightmare of Jianghu (ฝันร้ายยุทธภพ)
+Ten of Swords → Final Defeat of Warrior (จุดจบจอมยุทธ์)
+
+Page of Swords → Curious Young Fighter (ศิษย์นักสืบ)
+Knight of Swords → Aggressive Blade Warrior (นักรบดาบพุ่งชน)
+Queen of Swords → Cold Justice Woman (หญิงผู้ไร้อารมณ์)
+King of Swords → Supreme Martial Judge (ผู้พิพากษายุทธภพ)
+
+# PENTACLES SUIT — Wealth & Reality
+
+Ace of Pentacles → Divine Jade Seal Opportunity (โอกาสแห่งอำนาจ)
+Two of Pentacles → Balance of Wealth & Survival (สมดุลชีวิต)
+Three of Pentacles → Building Martial Sect Hall (สร้างสำนัก)
+Four of Pentacles → Greedy Sect Leader (ความโลภ)
+Five of Pentacles → Exiled Martial Disciples (ถูกขับไล่)
+Six of Pentacles → Charity in Martial World (การแบ่งปัน)
+Seven of Pentacles → Long Term Cultivation Growth (การรอคอย)
+Eight of Pentacles → Master Weapon Craftsman (ช่างตีอาวุธ)
+Nine of Pentacles → Independent Martial Noble (ความมั่งคั่งโดดเดี่ยว)
+Ten of Pentacles → Martial Clan Dynasty Legacy (ตระกูลใหญ่)
+
+Page of Pentacles → Apprentice of Wealth Path (ศิษย์การเงิน)
+Knight of Pentacles → Loyal Imperial Rider (อัศวินมั่นคง)
+Queen of Pentacles → Jade Empress of Prosperity (ราชินีความมั่งคั่ง)
+King of Pentacles → Emperor of Martial Empire (จักรพรรดิทรัพย์สิน)
