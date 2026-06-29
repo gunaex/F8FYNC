@@ -1,4 +1,5 @@
 import { standardGalacticWuxiaTarotDeck, getTarotSpread } from "./deck";
+import { getTarotMeaning } from "./meanings";
 import { createSecureTarotRandomSource, sha256Hex } from "./random";
 import { TAROT_ENGINE_VERSION, type TarotCardDefinition, type TarotDrawInput, type TarotOrientation, type TarotRandomSource, type TarotReading } from "./types";
 
@@ -49,11 +50,15 @@ export function drawTarotReading(input: TarotDrawInput): TarotReading {
   const spread = getTarotSpread(input.spreadId);
   const createdAt = input.createdAt ?? new Date().toISOString();
   const selectedCards = drawCards(standardGalacticWuxiaTarotDeck.cards, spread.positions.length, randomSource);
-  const cards = selectedCards.map((card, index) => ({
-    card,
-    position: spread.positions[index],
-    orientation: drawOrientation(input.allowReversals ?? true, randomSource)
-  }));
+  const cards = selectedCards.map((card, index) => {
+    const orientation = drawOrientation(input.allowReversals ?? true, randomSource);
+    return {
+      card,
+      position: spread.positions[index],
+      orientation,
+      meaning: getTarotMeaning(card.id, orientation)
+    };
+  });
   const receiptPayload = {
     memberId: input.memberId,
     requestId: input.requestId,

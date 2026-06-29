@@ -13,7 +13,8 @@ export const featureKeys: FeatureKey[] = [
   "saved_profiles",
   "premium_plugins",
   "export_report",
-  "priority_processing"
+  "priority_processing",
+  "forecast_6h"
 ];
 
 export const subscriptionPlans: SubscriptionPlan[] = [
@@ -87,7 +88,8 @@ export const entitlementMatrix: Record<string, Record<FeatureKey, FeatureEntitle
     saved_profiles: entitlement("saved_profiles", false, "total", 0),
     premium_plugins: entitlement("premium_plugins", false, "none"),
     export_report: entitlement("export_report", false, "none"),
-    priority_processing: entitlement("priority_processing", false, "none")
+    priority_processing: entitlement("priority_processing", false, "none"),
+    forecast_6h: entitlement("forecast_6h", false, "none")
   },
   free: {
     daily_insight: entitlement("daily_insight", true, "per_day", 10),
@@ -99,7 +101,8 @@ export const entitlementMatrix: Record<string, Record<FeatureKey, FeatureEntitle
     saved_profiles: entitlement("saved_profiles", true, "total", 1),
     premium_plugins: entitlement("premium_plugins", false, "none"),
     export_report: entitlement("export_report", false, "none"),
-    priority_processing: entitlement("priority_processing", false, "none")
+    priority_processing: entitlement("priority_processing", false, "none"),
+    forecast_6h: entitlement("forecast_6h", false, "none")
   },
   premium: {
     daily_insight: entitlement("daily_insight", true, "per_day", 100),
@@ -111,7 +114,8 @@ export const entitlementMatrix: Record<string, Record<FeatureKey, FeatureEntitle
     saved_profiles: entitlement("saved_profiles", true, "total", 10),
     premium_plugins: entitlement("premium_plugins", true, "none"),
     export_report: entitlement("export_report", false, "none"),
-    priority_processing: entitlement("priority_processing", true, "none")
+    priority_processing: entitlement("priority_processing", true, "none"),
+    forecast_6h: entitlement("forecast_6h", true, "none")
   },
   premium_yearly: {
     daily_insight: entitlement("daily_insight", true, "per_day", 100),
@@ -123,7 +127,8 @@ export const entitlementMatrix: Record<string, Record<FeatureKey, FeatureEntitle
     saved_profiles: entitlement("saved_profiles", true, "total", 10),
     premium_plugins: entitlement("premium_plugins", true, "none"),
     export_report: entitlement("export_report", false, "none"),
-    priority_processing: entitlement("priority_processing", true, "none")
+    priority_processing: entitlement("priority_processing", true, "none"),
+    forecast_6h: entitlement("forecast_6h", true, "none")
   }
 };
 

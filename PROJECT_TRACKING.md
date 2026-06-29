@@ -24,6 +24,13 @@ This file is the working log for prompts, implementation progress, plans, and fu
 | 2026-06-14 | Make analysis and target form labels sound more human | Updated localized form copy | Replaced technical labels and fixed nested i18n paths so UI no longer shows keys like `form.analysis.*` or `form.target.*` |
 | 2026-06-14 | Continue with Master Prompt V6 foundations | Added Premium Reveal filtering and methodology catalog foundation | Added server-side result reveal filtering, locked premium metadata, plugin methodology catalog API, health summary, and unit tests |
 | 2026-06-14 | Use GitHub repo `gunaex/F8FYNC.git` | Initialized local git repository and configured `origin` | Added `tsconfig.tsbuildinfo` to `.gitignore` before initial commit |
+| 2026-06-14 | Continue from `F8SYNC_V8_MASTER_BLUEPRINT.md` | Started V8 additive migration | Added required V8 docs, repository audit/gap analysis, feature-flag plan, Sacred Identity domain foundation, deterministic archetype resolver, and tests |
+| 2026-06-14 | Review inaccessible local application | Confirmed app builds and runs on fallback port | OrbStack was listening on port 3000, so Next.js served the app on port 3001; README now notes to use the printed Local URL |
+| 2026-06-17 | Save Milestone 0A markdown prompt into project | Added `docs/product/F8SYNC_MILESTONE_0A_PROMPT.md` | Stored the supplied audit/roadmap-alignment prompt as a source directive; Milestone 0A execution is still pending |
+| 2026-06-17 | Execute Milestone 0A repository audit and roadmap alignment | Added required Milestone 0A audit deliverables | Confirmed revised roadmap Version 1.1, classified current features, mapped V1.1 gaps, recommended incremental migration, and updated this decision log |
+| 2026-06-17 | Execute Milestone 0B methodology lock and intelligence decision pack | Added required methodology decision and specification deliverables | Created decision register, draft rulebook, intelligence boundary, Golden Test specification, approval workflow, readiness matrix, and recorded that implementation remains blocked by product and expert decisions |
+| 2026-06-17 | Execute Milestone 0B.1 Product Owner decision lock | Added KT-facing product decision pack | Created `docs/product/F8SYNC_KT_PRODUCT_DECISION_PACK_V1.md` with 15 KT decisions, 11 decisions blocking 0C, and 5 decisions requiring expert confirmation |
+| 2026-06-17 | Record KT Product Owner decisions for Milestone 0B.1 | Updated decision pack, decision register, and readiness matrix | Recorded 15 PO approval records, corrected the 0C-blocking count to 12, locked non-expert product decisions, and kept expert-dependent methodology as pending expert validation |
 
 ## Current Progress
 
@@ -49,6 +56,7 @@ This file is the working log for prompts, implementation progress, plans, and fu
 - Added unit, contract, integration, and E2E test coverage.
 - Added `.env.example` and README documentation.
 - Added OrbStack/Docker Compose local test environment.
+- Documented local dev port fallback behavior when OrbStack or another process already uses port 3000.
 - Initialized local git repository on `main` and configured GitHub remote `https://github.com/gunaex/F8FYNC.git`.
 - Redesigned the main UI into a more mobile-app-like experience with circular score visuals, stronger result hierarchy, visual timing cards, and improved bottom navigation.
 - Added MVP v2 commercial foundation:
@@ -99,6 +107,44 @@ This file is the working log for prompts, implementation progress, plans, and fu
   - Thai Astrology, Western Astrology, Tarot, I Ching, Korean Saju, and Japanese systems represented without fake calculation logic
   - Health API methodology catalog summary
   - Unit tests for Premium filtering and methodology catalog coverage
+- Added V8 additive migration foundation:
+  - Copied V8 blueprint into `docs/product/F8SYNC_V8_MASTER_BLUEPRINT.md`
+  - Added required V8 architecture, migration, test, naming, art direction, card taxonomy, random draw, and physical product docs
+  - Recorded repository audit, V8 gap analysis, data migration plan, feature-flag plan, API authorization plan, and risk lists
+  - Added V8 feature flags with paid randomized packs and real fulfillment disabled by default
+  - Added Sacred Identity bounded domain types, seed archetype registry, deterministic identity resolver, elemental balance summary, and symbolic seal seed hash
+  - Added identity determinism and incomplete-state unit tests
+- Saved the supplied Milestone 0A audit and revised roadmap alignment prompt under `docs/product/F8SYNC_MILESTONE_0A_PROMPT.md`.
+- Completed Milestone 0A documentation-only audit against `F8SYNC_REVISED_IMPLEMENTATION_ROADMAP_V1_1.md`:
+  - Confirmed the roadmap document is readable and Version 1.1
+  - Added `docs/product/F8SYNC_MILESTONE_0A_REPOSITORY_AUDIT.md`
+  - Added `docs/product/F8SYNC_CURRENT_FEATURE_CLASSIFICATION.md`
+  - Added `docs/product/F8SYNC_ROADMAP_GAP_ANALYSIS_V1.md`
+  - Added `docs/product/F8SYNC_INCREMENTAL_MIGRATION_PLAN_V1.md`
+  - Recorded incremental migration as the recommended strategy
+- Completed Milestone 0B documentation-only methodology lock and intelligence decision pack:
+  - Added `docs/product/F8SYNC_METHODOLOGY_DECISION_REGISTER_V1.md`
+  - Added `docs/product/F8SYNC_BAZI_CALCULATION_RULEBOOK_DRAFT_V1.md`
+  - Added `docs/product/F8SYNC_INTELLIGENCE_LAYER_BOUNDARY_V1.md`
+  - Added `docs/product/F8SYNC_GOLDEN_TEST_SPECIFICATION_V1.md`
+  - Added `docs/product/F8SYNC_METHODOLOGY_APPROVAL_WORKFLOW_V1.md`
+  - Added `docs/product/F8SYNC_IMPLEMENTATION_READINESS_MATRIX_V1.md`
+  - Classified current BaZi, timing, aggregation, and identity behavior as placeholder/prototype evidence only
+  - Separated KT product decisions from BaZi expert validation requirements
+  - Confirmed Golden Test expected values remain blank until methodology approval and expert review
+  - Recommended Milestone 0C as contract design only, preserving pending methodology as unknown/deferred rather than implementing calculations
+- Completed Milestone 0B.1 documentation-only Product Owner decision lock:
+  - Added `docs/product/F8SYNC_KT_PRODUCT_DECISION_PACK_V1.md`
+  - Prepared 15 KT-facing decisions for review
+  - Identified 12 decisions that must be decided before Milestone 0C
+  - Identified 5 decisions requiring expert confirmation
+  - Separated KT-approvable product defaults from expert-only methodology validation
+- Recorded KT Product Owner decisions for Milestone 0B.1:
+  - Recorded 15 unique PO approval records (`PO-0B1-001` through `PO-0B1-015`)
+  - Corrected the 0C-blocking decision count from 11 to 12
+  - Locked non-expert Product Owner decisions in the methodology decision register
+  - Recorded Traditional BaZi, identity, archetype, Ten Gods/hidden stems, and element-balance product directions as pending expert validation
+  - Updated implementation readiness so approved product defaults can proceed to contract design while calculation methodology remains blocked by expert validation
 - Verified:
   - `pnpm typecheck`
   - `pnpm test`
@@ -110,6 +156,8 @@ This file is the working log for prompts, implementation progress, plans, and fu
 - Manual product review in browser.
 - UX refinement for the analysis flow.
 - Expansion of timeline and comparison pages beyond placeholder route surfaces.
+- KT and expert review of Milestone 0B methodology decisions before Milestone 0C contract design.
+- KT review of Milestone 0B.1 product decision pack before Milestone 0C contract design.
 
 ### Known Limitations
 
@@ -127,6 +175,16 @@ This file is the working log for prompts, implementation progress, plans, and fu
 - Premium Reveal UI components are not yet built; `/api/fortune` now returns locked metadata and filtered values for non-Premium sessions.
 - Methodology catalog is metadata-only for Thai Astrology, Western Astrology, Tarot, I Ching, Korean Saju, and Japanese systems; no fake calculation logic is implemented.
 - Notification engine foundations from MVP v6 are still pending.
+- V8 identity foundation is domain-only; identity pages, APIs, repository persistence, localized archetype copy, and card composition are pending.
+- V8 card, collection, random draw, art asset, physical product, and notification domains are documented but not implemented in code yet.
+- Paid randomized packs and real physical fulfillment are intentionally disabled by default.
+- Milestone 0A was documentation-only and did not change app behavior, migrations, schemas, UI behavior, staging, commits, tags, or remote state.
+- V1.1 roadmap alignment identifies the current BaZi, timing, aggregation, and identity logic as placeholder/prototype foundations that must be refactored after methodology lock.
+- V1.1 roadmap alignment treats V8 multi-engine, card, random draw, and physical-product work as deferred expansion backlog rather than active V1 implementation authority.
+- Milestone 0B was documentation-only and did not approve BaZi methodology, Golden Test expected values, application code, tests, schemas, migrations, commits, tags, or remote state.
+- Milestone 0B keeps BaZi source, Li Chun/year boundary, solar-term month boundary, day rollover, hour pillar, element weighting, seasonal strength, identity dimensions, archetype matrix, daily timing rules, and AI minimized-input policy pending until KT and/or expert review.
+- Milestone 0B.1 was documentation-only and does not approve decisions on behalf of KT or validate BaZi methodology.
+- KT decisions for Milestone 0B.1 do not authorize BaZi calculation implementation; source path, reviewer, boundary rules, and Golden references remain pending expert validation.
 
 ## Implementation Plan
 
@@ -310,6 +368,97 @@ This file is the working log for prompts, implementation progress, plans, and fu
 - [ ] History API reveal filtering audit
 - [ ] E2E leakage prevention coverage
 
+### Phase P - V8 Audit and Documentation
+
+- [x] Copy V8 blueprint into `docs/product/F8SYNC_V8_MASTER_BLUEPRINT.md`
+- [x] Current-state repository audit
+- [x] Working module inventory
+- [x] V8 gap analysis
+- [x] Data migration plan
+- [x] File-by-file implementation plan
+- [x] Feature-flag plan
+- [x] API authorization plan
+- [x] Test plan
+- [x] Security and privacy risk list
+- [x] Card randomness risk list
+- [x] Art and cultural-review risk list
+- [x] Physical product boundary list
+- [x] Naming bible
+- [x] Art direction bible
+- [x] Card taxonomy
+- [x] Random draw policy
+- [x] Physical product guide
+
+### Phase Q - V8 Sacred Identity Foundation
+
+- [x] Semantic trait model
+- [x] Archetype registry types
+- [x] Product-original archetype seed registry
+- [x] Deterministic identity resolver
+- [x] Elemental balance summary
+- [x] Symbolic seal deterministic seed hash
+- [x] Identity foundation unit tests
+- [ ] Identity API routes
+- [ ] Identity pages and shared components
+- [ ] Identity persistence migration
+- [ ] TH / EN / zh-CN archetype localization
+- [ ] Authorized identity result filtering
+- [ ] SVG symbolic seal renderer
+
+### Phase R - V8 Cards, Collection, Random Draw, Art, Physical Readiness
+
+- [ ] Card domain types and composition engine
+- [ ] Collection and ownership domain
+- [ ] Random draw secure RNG and receipt foundation
+- [ ] Art asset provenance model
+- [ ] Physical product and print specification models
+- [ ] Mock commerce and fulfillment providers
+- [ ] V8 database migrations
+- [ ] Shared UI components and routes
+
+### Phase S - Milestone 0A Repository Audit and V1.1 Alignment
+
+- [x] Confirm `F8SYNC_REVISED_IMPLEMENTATION_ROADMAP_V1_1.md` is readable and Version 1.1
+- [x] Review `F8SYNC_MILESTONE_0A_PROMPT.md`
+- [x] Produce repository audit deliverable
+- [x] Produce current feature classification matrix
+- [x] Produce revised roadmap gap analysis
+- [x] Produce incremental migration plan
+- [x] Update existing decision log
+- [x] Preserve documentation-only boundary with no code, schema, migration, staging, commit, tag, or push changes
+- [x] Execute Milestone 0B methodology lock and decision documents
+
+### Phase T - Milestone 0B Methodology Lock and Intelligence Decision Pack
+
+- [x] Read Milestone 0A deliverables and revised roadmap source documents
+- [x] Inspect current birth input, timezone, BaZi, timing, aggregation, identity, AI interpretation, versioning, and Golden Test evidence
+- [x] Create methodology decision register with status model and top KT decisions
+- [x] Create draft BaZi calculation rulebook without formulas or fabricated expected values
+- [x] Define Traditional BaZi, F8SYNC deterministic derivation, experience formatting, and AI interpretation boundaries
+- [x] Define Golden Test fixture structure and categories with blank expected values
+- [x] Define methodology approval workflow and approver routing
+- [x] Create implementation readiness matrix
+- [x] Update this project tracking document
+- [x] Preserve documentation-only boundary with no application code, test, schema, migration, staging, commit, tag, or push changes
+- [ ] KT product review of pending decisions
+- [ ] BaZi expert validation of methodology decisions and Golden references
+- [ ] Milestone 0C intelligence contract design after review
+
+### Phase U - Milestone 0B.1 Product Owner Decision Lock
+
+- [x] Read Milestone 0B decision register, draft rulebook, boundary spec, Golden Test spec, approval workflow, readiness matrix, revised roadmap, and project tracking
+- [x] Create KT-facing decision pack at `docs/product/F8SYNC_KT_PRODUCT_DECISION_PACK_V1.md`
+- [x] Separate KT-approvable product decisions from expert validation and technical post-methodology decisions
+- [x] Provide recommended V1 defaults for Product Owner decisions
+- [x] Record 15 Product Owner decisions
+- [x] Identify 12 decisions blocking Milestone 0C
+- [x] Identify 5 decisions requiring expert confirmation
+- [x] Record KT Product Owner decisions in the decision pack
+- [x] Update methodology decision register status mapping from KT decisions
+- [x] Update implementation readiness based on locked product decisions and remaining expert-validation blockers
+- [x] Preserve documentation-only boundary with no application code, test, schema, migration, staging, commit, tag, or push changes
+- [ ] BaZi expert validates Category C methodology items
+
 ## Functional Coverage
 
 | Function / Area | Status | File / Module | Notes |
@@ -324,6 +473,23 @@ This file is the working log for prompts, implementation progress, plans, and fu
 | Numerology plugin | Done | `src/plugins/numerology/index.ts` | Simplified deterministic target scoring |
 | Timing plugin | Done | `src/plugins/timing/index.ts` | Simplified deterministic timing windows |
 | Methodology catalog | Done | `src/plugins/catalog.ts`, `src/app/api/plugins/catalog/route.ts` | Active, foundation, and roadmap methodology metadata including Thai Astrology, Western Astrology, Tarot, I Ching, Korean Saju, and Japanese systems |
+| V8 documentation authority | Done | `docs/product/*`, `docs/architecture/*`, `docs/testing/*` | V8 blueprint copied locally with required audit, migration, test, naming, art, card, random draw, and physical-product docs |
+| Milestone 0A prompt | Done | `docs/product/F8SYNC_MILESTONE_0A_PROMPT.md` | Supplied repository audit and roadmap alignment directive saved |
+| Milestone 0A repository audit | Done | `docs/product/F8SYNC_MILESTONE_0A_REPOSITORY_AUDIT.md` | Confirms V1.1 roadmap read, audits architecture, data, AI boundaries, testing, governance, and recommends incremental migration |
+| Milestone 0A feature classification | Done | `docs/product/F8SYNC_CURRENT_FEATURE_CLASSIFICATION.md` | Classifies current features as KEEP, REFACTOR, DEFER, or ARCHIVE CANDIDATE |
+| Milestone 0A gap analysis | Done | `docs/product/F8SYNC_ROADMAP_GAP_ANALYSIS_V1.md` | Maps current implementation to V1.1 roadmap requirements and identifies Phase 0/1 blockers |
+| Milestone 0A migration plan | Done | `docs/product/F8SYNC_INCREMENTAL_MIGRATION_PLAN_V1.md` | Defines non-destructive migration stages, data compatibility, rollback, risk register, and next milestone |
+| Milestone 0B decision register | Done | `docs/product/F8SYNC_METHODOLOGY_DECISION_REGISTER_V1.md` | Records 52 methodology decisions with statuses, approvers, impacts, and blocking levels |
+| Milestone 0B draft rulebook | Done | `docs/product/F8SYNC_BAZI_CALCULATION_RULEBOOK_DRAFT_V1.md` | Defines rule structure and pending approval gates without implementing formulas or expected values |
+| Milestone 0B boundary spec | Done | `docs/product/F8SYNC_INTELLIGENCE_LAYER_BOUNDARY_V1.md` | Separates Traditional BaZi calculation, F8SYNC derivation, experience formatting, and AI interpretation |
+| Milestone 0B Golden Test spec | Done | `docs/product/F8SYNC_GOLDEN_TEST_SPECIFICATION_V1.md` | Defines required Golden Test categories and fixture metadata while keeping expected values blank |
+| Milestone 0B approval workflow | Done | `docs/product/F8SYNC_METHODOLOGY_APPROVAL_WORKFLOW_V1.md` | Defines KT and expert review workflow, decision routing, and rule-version authorization |
+| Milestone 0B readiness matrix | Done | `docs/product/F8SYNC_IMPLEMENTATION_READINESS_MATRIX_V1.md` | Classifies deterministic components as ready for contract design, blocked, deferred, or not supported in V1 |
+| Milestone 0B.1 KT decision pack | Done | `docs/product/F8SYNC_KT_PRODUCT_DECISION_PACK_V1.md` | Records 15 KT Product Owner approval records, including 12 blocking 0C and 5 requiring expert confirmation |
+| V8 feature flags | Done | `src/config/feature-flags.ts`, `.env.example` | Identity enabled by default; cards, collection, packs, physical products, notifications, paid packs, and real fulfillment default disabled |
+| Sacred Identity types | Partial | `src/core/identity/types.ts` | V8 trait, archetype, elemental balance, symbolic seal, placement, and profile models |
+| Sacred Identity resolver | Partial | `src/core/identity/resolver.ts` | Deterministic archetype placement and symbolic seal seed hash from aggregated result; API/UI/persistence pending |
+| Archetype registry | Partial | `src/core/identity/archetypes.ts` | Product-original approved seed registry; final naming/cultural/commercial review pending |
 | Aggregation | Done | `src/core/aggregation/aggregate.ts` | Confidence-weighted scores, agreement, conflicts, recommendations |
 | Timing merge/status | Done | `src/core/timing/merge.ts` | Window sorting, compatible merge, current status, next optimal window |
 | Orchestrator | Done | `src/core/orchestrator/run-fortune-analysis.ts` | Validates request, resolves plugins, executes, aggregates |
@@ -375,6 +541,7 @@ This file is the working log for prompts, implementation progress, plans, and fu
 | Database foundation | Partial | `migrations/*.sql` | Supabase/Postgres schema and seed plans exist; runtime adapter pending |
 | Admin foundation | Partial | `src/app/[locale]/admin/page.tsx` | Minimal role-aware route surface |
 | Notification engine | Not started | Pending | MVP v6 notification types, scheduler, preferences, APIs, and UI are pending |
+| V8 card system | Not started | Pending | Card composition, collection, random draw, art approval, and physical product code are pending |
 
 ## Verification Log
 
@@ -422,24 +589,36 @@ This file is the working log for prompts, implementation progress, plans, and fu
 | 2026-06-14 | `pnpm build` | Passed | Production build passed with methodology catalog API route |
 | 2026-06-14 | `pnpm test:e2e` | Passed | 8 browser tests passed after `/api/fortune` reveal filtering |
 | 2026-06-14 | `git remote -v` | Passed | `origin` points to `https://github.com/gunaex/F8FYNC.git` |
+| 2026-06-14 | `pnpm typecheck` | Passed | After V8 docs, feature flags, and Sacred Identity foundation |
+| 2026-06-14 | `pnpm test` | Passed | 23 tests passed including identity determinism and incomplete-state coverage |
+| 2026-06-14 | `pnpm build` | Passed | Production build passed after V8 docs and identity foundation |
+| 2026-06-14 | `pnpm test:e2e` | Passed | 8 browser tests passed after V8 foundation changes |
+| 2026-06-14 | `pnpm build` | Passed | Rechecked after local access report; build still passes |
+| 2026-06-14 | `pnpm dev` | Passed | Next.js started on `http://localhost:3001` because OrbStack was using port 3000 |
+| 2026-06-14 | `curl -I http://127.0.0.1:3001/th` | Passed | Returned `200 OK` from the running dev server |
+| 2026-06-14 | `curl -s http://127.0.0.1:3001/api/health` | Passed | Health API returned `status: ok` with 3 enabled plugins |
+| 2026-06-17 | `wc -l docs/product/F8SYNC_MILESTONE_0A_PROMPT.md` | Passed | Saved prompt has 562 lines |
+| 2026-06-17 | `rg -n "Version:" docs/product/F8SYNC_REVISED_IMPLEMENTATION_ROADMAP_V1_1.md` | Passed | Confirmed revised roadmap document is Version 1.1 |
+| 2026-06-17 | `rg --files src tests docs migrations` | Passed | Repository structure inspected for Milestone 0A documentation audit |
+| 2026-06-17 | Documentation-only review | Passed | No application code, schemas, migrations, staged files, commits, tags, or pushes were intentionally changed for Milestone 0A |
+| 2026-06-17 | `git status --short --branch` | Passed | Confirmed dirty tree before Milestone 0B; changes were treated as existing work and not reverted |
+| 2026-06-17 | Milestone 0B source review | Passed | Read required 0A deliverables, revised roadmap, gap analysis, migration plan, and project tracking |
+| 2026-06-17 | Milestone 0B deterministic logic inspection | Passed | Inspected birth input schemas, mock BaZi/timing/numerology plugins, aggregation, identity resolver, AI interpretation, catalog, and related tests/docs |
+| 2026-06-17 | Documentation-only 0B update | Passed | Added required product docs and updated tracking only; no application code, tests, schemas, migrations, commits, tags, or pushes were performed |
+| 2026-06-17 | Milestone 0B.1 source review | Passed | Read required 0B docs, revised roadmap, and project tracking before creating KT decision pack |
+| 2026-06-17 | Documentation-only 0B.1 update | Passed | Added KT decision pack and updated tracking only; no application code, tests, schemas, migrations, commits, tags, or pushes were performed |
+| 2026-06-17 | Milestone 0B.1 KT decision recording | Passed | Updated KT decision pack, decision register, readiness matrix, and tracking only; no application code, tests, schemas, migrations, commits, tags, or pushes were performed |
 
 ## Next Recommended Tasks
 
-1. Build Premium Reveal UI components that consume `premiumReveal.lockedSections`.
-2. Add E2E leakage prevention tests proving unauthorized sessions never receive Premium result values.
-3. Add the MVP v6 notification domain types, preference service, scheduler abstraction, APIs, and localization.
-4. Add Supabase repository adapter for the migration schema, including coupons, coupon redemptions, knowledge documents, and audit logs.
-5. Add Supabase or pgvector retriever adapter behind the guardrail retriever interface.
-6. Add admin knowledge management APIs and UI.
-7. Add real auth provider adapter or Supabase Auth integration.
-8. Expand E2E tests for register, session, birth profile, history, usage, pricing, mock upgrade, coupon redeem, duplicate coupon denial, guardrail flows, cancel, and delete account.
-9. Build full birth-profile management UI.
-10. Expand the dedicated timeline page to load and render saved or query-based results.
-11. Build a real multi-target comparison workflow.
-12. Add missing-key validation for dictionaries.
-13. Add distributed API rate limiting separate from usage quota.
-14. Add an external AI provider adapter behind the existing provider interface.
-15. Run a visual and accessibility review on mobile and desktop.
+1. Assign or confirm the BaZi methodology source path and expert reviewer.
+2. Expert reviewer validates BaZi source, year/Li Chun policy, month solar-term boundary, day rollover, hour pillar, element weighting, seasonal strength, and Golden references.
+3. Keep Golden Test expected values empty until the BaZi methodology source and reviewer have approved them.
+4. Execute Milestone 0C as contract design only: V1 birth input, unknown-input, timezone, calendar, trace, evidence, confidence, version, engine, and AI allowed-input contracts.
+5. Do not implement BaZi calculations until the rulebook, Golden references, and blocking expert decisions are approved.
+6. Add additive V1 database migrations only after contract approval.
+7. Add E2E leakage prevention tests proving unauthorized sessions never receive Premium result, identity, timing, or card values.
+8. Preserve V8 cards, random draw, broad methodology, and physical commerce as deferred expansion backlog until the V1 digital core is validated.
 
 ## Decision Log
 
@@ -461,3 +640,15 @@ This file is the working log for prompts, implementation progress, plans, and fu
 | 2026-06-14 | Apply Premium result protection at the API response layer | V6 requires unauthorized clients to never receive hidden Premium values, not just hidden UI |
 | 2026-06-14 | Represent future methodologies as catalog metadata until formulas are implemented | Avoids fake Thai Astrology, Western Astrology, Tarot, I Ching, Korean Saju, or Japanese system calculations |
 | 2026-06-14 | Keep TypeScript build info out of version control | `tsconfig.tsbuildinfo` is generated cache and should not be committed |
+| 2026-06-14 | Treat V8 as an additive migration authority | Preserves working MVP modules while expanding into identity, cards, collection, notifications, art governance, random draw, and physical readiness |
+| 2026-06-14 | Keep paid randomized packs and real fulfillment disabled by default | Matches V8 safety boundary until product, legal, platform, and fulfillment reviews are complete |
+| 2026-06-14 | Resolve Sacred Identity deterministically from aggregated results | V8 requires archetypes and symbolic seals to be rule-based, versioned, and not AI-selected or random |
+| 2026-06-17 | F8SYNC will not perform an immediate full rewrite | Milestone 0A found reusable app, API, entitlement, coupon, Premium Reveal, guardrail, i18n, test, and migration foundations; the main gap is the deterministic intelligence subsystem |
+| 2026-06-17 | Traditional BaZi Foundation plus F8SYNC Deterministic Intelligence Layer is the V1 core | `F8SYNC_REVISED_IMPLEMENTATION_ROADMAP_V1_1.md` defines V1 around an approved BaZi foundation and product-original deterministic translation layer |
+| 2026-06-17 | Expansion engines and physical commerce remain deferred until the digital core is validated | V1.1 explicitly narrows Phase 0/1 scope and moves multiple engines, random draw, physical fulfillment, community, and broad commerce into later expansion |
+| 2026-06-17 | Use incremental migration with targeted deterministic-core replacement | Existing platform components are valuable, but placeholder BaZi, timing, aggregation, and identity logic must be refactored after methodology lock |
+| 2026-06-17 | Do not fabricate Golden Test expected values before methodology approval | V1.1 requires golden expected outputs only after approved BaZi rulebook and independent review |
+| 2026-06-17 | Milestone 0B does not approve methodology implementation | The decision pack separates locked principles, proposed contracts, KT decisions, expert-validation blockers, and deferred scope without encoding BaZi formulas |
+| 2026-06-17 | Milestone 0C should be contract design only unless approvals are completed first | Many deterministic components are ready for contract design but blocked for calculation implementation by KT and expert decisions |
+| 2026-06-17 | Milestone 0B.1 narrows KT review to product decisions only | KT can approve product defaults and scope before 0C, but BaZi correctness, Golden expected values, and calculation methodology still require expert validation |
+| 2026-06-17 | KT approved 0B.1 product defaults but not calculation methodology | Non-expert product decisions are locked for contract design; Traditional BaZi direction, identity/archetype derivation, advanced BaZi concepts, element presentation, and Golden references remain pending expert validation |

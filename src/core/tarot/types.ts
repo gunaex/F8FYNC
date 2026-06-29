@@ -59,6 +59,17 @@ export type TarotDrawnCard = {
   card: TarotCardDefinition;
   position: TarotSpreadPosition;
   orientation: TarotOrientation;
+  meaning: TarotCardMeaningSide;
+};
+
+export type TarotMeaningDomain = "general" | "love" | "work" | "money";
+
+export type TarotCardMeaningSide = Record<TarotMeaningDomain, string>;
+
+export type TarotCardMeaning = {
+  cardId: string;
+  upright: TarotCardMeaningSide;
+  reversed: TarotCardMeaningSide;
 };
 
 export type TarotDrawReceipt = {

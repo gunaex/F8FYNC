@@ -1,10 +1,21 @@
 # F8SYNC
 
-F8SYNC is a mobile-first Fortune & Timing Intelligence Platform for Thailand. The MVP provides structured personal timing, compatibility, and decision-support insight from deterministic plugin engines, with optional AI explanation that only interprets existing engine output.
+F8SYNC is a mobile-first Fortune & Timing Intelligence Platform for Thailand. The current V8 blueprint expands the product into a Sacred Identity, Timing, Digital Card, Collection, and future Physical Card platform while preserving deterministic fortune engines as the source of truth.
 
 The product direction is private banker, wellness coach, and personal timing advisor. It avoids horoscope, tarot, gambling, fear-based, and guaranteed-outcome positioning.
 
-## MVP Scope
+## Product Authority
+
+The V8 implementation authority lives in:
+
+- `docs/product/F8SYNC_V8_MASTER_BLUEPRINT.md`
+- `docs/architecture/F8SYNC_V8_DOMAIN_ARCHITECTURE.md`
+- `docs/architecture/F8SYNC_V8_DATA_MIGRATION.md`
+- `docs/testing/F8SYNC_V8_TEST_PLAN.md`
+
+V8 is additive. Working fortune, coupon, entitlement, RAG, and Premium Reveal modules must be preserved while identity, cards, collection, notifications, art governance, random draw, and physical-product readiness are added behind explicit boundaries and feature flags.
+
+## Current Scope
 
 - Birth profile input
 - Daily, timing, compatibility, and comparison analysis types
@@ -14,8 +25,10 @@ The product direction is private banker, wellness coach, and personal timing adv
 - Thai default UI with English and Simplified Chinese through one i18n system
 - Optional AI interpretation through a provider abstraction with a deterministic mock fallback
 - Vercel-compatible API routes with memory fallback for preview and Supabase/Postgres migration foundations for production
+- V8 Sacred Identity foundation with deterministic archetype resolution from aggregated engine output
+- V8 documentation set for naming, art direction, card taxonomy, random draw policy, and physical product readiness
 
-Excluded from MVP: marketplace, native app, push notifications, production-grade astrology algorithms, real payment processing, and production auth adapters.
+Excluded from current implementation: marketplace, native app, production-grade astrology algorithms, real payment processing, production auth adapters, paid random packs, real physical fulfillment, and unreviewed production AI art.
 
 ## Architecture
 
@@ -23,13 +36,14 @@ The implementation uses a compact single Next.js repository while preserving pac
 
 ```text
 src/app                 Next.js App Router pages and route handlers
-src/core                Framework-independent domain types, schemas, orchestrator, aggregation, timing
+src/core                Framework-independent domain types, schemas, orchestrator, aggregation, timing, identity
 src/plugin-sdk          Plugin contracts, manifest validation, registry, safe executor
 src/plugins             BaZi, Numerology, and Timing deterministic MVP plugins
 src/ai                  Provider interface, mock provider, guardrails, RAG retrieval, output validation
 src/i18n                Locale config, dictionaries, formatters
 src/ui                  Tokens, primitives, and shared product components
 src/config              Application config, routes, feature flags
+docs                    V8 product, architecture, migration, and testing authority
 tests                   Unit, contract, integration, and Playwright E2E tests
 ```
 
@@ -43,6 +57,8 @@ pnpm dev
 ```
 
 Open `http://localhost:3000`. The root redirects to `/th`.
+
+If port `3000` is already in use, Next.js will choose the next available port and print it in the terminal, for example `http://localhost:3001`. Use the printed `Local:` URL rather than assuming `3000`.
 
 ## Local Test Environment with OrbStack
 
@@ -92,6 +108,14 @@ PLUGIN_TIMEOUT_MS=5000
 ENABLE_BAZI_PLUGIN=true
 ENABLE_NUMEROLOGY_PLUGIN=true
 ENABLE_TIMING_PLUGIN=true
+ENABLE_V8_IDENTITY=true
+ENABLE_V8_CARDS=false
+ENABLE_V8_COLLECTION=false
+ENABLE_V8_PACKS=false
+ENABLE_V8_PHYSICAL_PRODUCTS=false
+ENABLE_V8_NOTIFICATIONS=false
+ENABLE_PAID_RANDOM_PACKS=false
+ENABLE_REAL_FULFILLMENT=false
 ```
 
 Never expose provider keys to browser code.
@@ -108,6 +132,18 @@ migrations/0002_seed_plans.sql
 migrations/0003_coupons.sql
 migrations/0004_rag_guardrails.sql
 ```
+
+V8 data migrations are documented in `docs/architecture/F8SYNC_V8_DATA_MIGRATION.md` and should be added additively after the existing migration baseline.
+
+## V8 Sacred Identity Foundation
+
+The identity domain lives under `src/core/identity`.
+
+- Archetype definitions are product-original seed concepts.
+- Identity resolution is deterministic and rule-versioned.
+- Symbolic seals use deterministic seed hashes and do not embed raw birth data.
+- AI does not select archetypes, alter identity, or generate production card names.
+- Card, collection, pack, notification, and physical-product features remain behind feature flags until their domains are implemented and tested.
 
 ## Commands
 

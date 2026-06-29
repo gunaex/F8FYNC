@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createDeterministicTarotRandomSource, drawTarotReading, standardGalacticWuxiaTarotDeck, tarotSpreads } from "@/core/tarot";
+import { createDeterministicTarotRandomSource, drawTarotReading, standardGalacticWuxiaTarotDeck, tarotMeanings, tarotSpreads } from "@/core/tarot";
 
 describe("tarot core foundation", () => {
   it("defines a complete standard 78-card deck with original galactic wuxia presentation titles", () => {
@@ -31,6 +31,26 @@ describe("tarot core foundation", () => {
     expect(missingAssetPaths).toEqual([]);
   });
 
+  it("provides complete Thai meanings for all 78 cards", () => {
+    const deckIds = standardGalacticWuxiaTarotDeck.cards.map((card) => card.id);
+    const meaningIds = tarotMeanings.map((meaning) => meaning.cardId);
+    const allText = JSON.stringify(tarotMeanings);
+
+    expect(tarotMeanings).toHaveLength(78);
+    expect(new Set(meaningIds).size).toBe(78);
+    expect(meaningIds).toEqual(deckIds);
+    expect(allText).not.toContain("[cite:");
+
+    for (const meaning of tarotMeanings) {
+      for (const side of [meaning.upright, meaning.reversed]) {
+        expect(side.general.trim()).not.toBe("-");
+        expect(side.love.trim()).not.toBe("-");
+        expect(side.work.trim()).not.toBe("-");
+        expect(side.money.trim()).not.toBe("-");
+      }
+    }
+  });
+
   it("draws a deterministic audited three-card reading for test seeds", () => {
     const reading = drawTarotReading({
       requestId: "tarot-test-001",
@@ -46,6 +66,7 @@ describe("tarot core foundation", () => {
     expect(reading.receipt.rngProvider).toBe("deterministic_test_sha256");
     expect(reading.receipt.auditHash).toMatch(/^[a-f0-9]{64}$/);
     expect(reading.receipt.receiptId).toBe(`tarot_receipt_${reading.receipt.auditHash.slice(0, 16)}`);
+    expect(reading.cards.every((item) => item.meaning.general.length > 0)).toBe(true);
     expect(reading.safety).toEqual({
       randomDrawOnly: true,
       doesNotModifyDeterministicFortune: true,

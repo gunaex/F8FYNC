@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { AggregatedFortuneResult, SupportedLocale } from "@/core/domain";
+import type { TarotReading } from "@/core/tarot";
 import { buildBaziStructureProfile } from "@/core/engine/elements";
 import { getHiddenStems } from "@/core/engine/hidden-stems";
 import { buildIdentityLayer } from "@/core/engine/identity";
@@ -19,12 +20,14 @@ import {
   DomainScoreGrid,
   ElementBalance,
   EmptyState,
+  ForecastPanel,
   FourPillarsRow,
   PartialBanner,
   PillarDetailSheet,
   RecommendationCard,
   ScoreCard,
   SystemSourceCard,
+  TarotDrawPanel,
   Timeline,
   TimingStatusCard,
   TimingWindowCard,
@@ -265,10 +268,59 @@ function buildF8SyncViewModel(formState: AnalysisFormState, loading: boolean): F
   };
 }
 
+function TarotCompanionCard({
+  reading,
+  labels
+}: {
+  reading: TarotReading | null;
+  labels: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    upright: string;
+    reversed: string;
+    meaningGeneral: string;
+    safety: string;
+  };
+}) {
+  const item = reading?.cards[0];
+
+  return (
+    <div className="tarot-companion-card card">
+      <div>
+        <span className="badge positive">{labels.subtitle}</span>
+        <h2>{labels.title}</h2>
+      </div>
+      {item ? (
+        <div className="tarot-companion-content">
+          <img src={item.card.imagePath} alt={item.card.visualTitle} />
+          <div>
+            <h3>{item.card.visualTitle}</h3>
+            <p className="muted">{item.card.standardName}</p>
+            <strong>{item.orientation === "upright" ? labels.upright : labels.reversed}</strong>
+            <dl className="tarot-meaning-list">
+              <div>
+                <dt>{labels.meaningGeneral}</dt>
+                <dd>{item.meaning.general}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      ) : (
+        <p className="muted">{labels.empty}</p>
+      )}
+      <p className="muted tarot-companion-safety">{labels.safety}</p>
+    </div>
+  );
+}
+
 export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLocale; dictionary: Record<string, unknown> }) {
+  const [analysisMode, setAnalysisMode] = useState<"bazi" | "tarot">("bazi");
   const [formState, setFormState] = useState(initialState);
   const [analysisContextTime] = useState(() => new Date().toISOString());
+  const [forecastRequestId] = useState(() => `forecast-home-${crypto.randomUUID()}`);
   const [result, setResult] = useState<AggregatedFortuneResult | null>(null);
+  const [companionTarot, setCompanionTarot] = useState<TarotReading | null>(null);
   const [ai, setAi] = useState<AIOutput | null>(null);
   const [explanationQuestion, setExplanationQuestion] = useState("");
   const [detailOpen, setDetailOpen] = useState(false);
@@ -295,6 +347,7 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
     setLoading(true);
     setError(null);
     setAi(null);
+    setCompanionTarot(null);
     try {
       const payload = {
         requestId: crypto.randomUUID(),
@@ -315,10 +368,31 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
       const json = await response.json();
       if (!json.success) throw new Error(json.error?.messageKey ?? "common.error");
       setResult(json.data);
+      void drawCompanionTarot(payload.requestId);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "common.error");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function drawCompanionTarot(requestId: string) {
+    try {
+      const response = await fetch("/api/tarot/draw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestId: crypto.randomUUID(),
+          spreadId: "one_card",
+          question: formState.objective || formState.queryType,
+          allowReversals: true,
+          idempotencyKey: `bazi-companion:${requestId}`
+        })
+      });
+      const json = await response.json();
+      if (json.success) setCompanionTarot(json.data);
+    } catch {
+      setCompanionTarot(null);
     }
   }
 
@@ -357,10 +431,18 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
   };
   const f8syncViewModel = useMemo(() => buildF8SyncViewModel(formState, loading), [formState, loading]);
   const selectedPillar = selectedPillarKey ? f8syncViewModel.pillars.find((pillar) => pillar.key === selectedPillarKey) ?? null : null;
+  const forecastBirthProfile = useMemo(() => {
+    if (!formState.birthDate) return undefined;
+    return {
+      birthDate: formState.birthDate,
+      birthTime: formState.birthTime || undefined,
+      birthTimezone: formState.birthTimezone
+    };
+  }, [formState.birthDate, formState.birthTime, formState.birthTimezone]);
 
   return (
     <div className="dashboard-grid">
-      <div>
+      <div className="workspace-rail">
         <div className="hero-panel">
           <span className="hero-kicker">{t(dictionary, "common.appName")}</span>
           <h1>{t(dictionary, "home.greeting")}</h1>
@@ -372,25 +454,90 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
             <span />
           </div>
         </div>
-        <CouponRedeemCard
+        <ForecastPanel
+          requestId={forecastRequestId}
+          contextTimezone={formState.contextTimezone}
+          birthProfile={forecastBirthProfile}
           labels={{
-            title: t(dictionary, "coupon.title"),
-            description: t(dictionary, "coupon.description"),
-            inputLabel: t(dictionary, "coupon.inputLabel"),
-            placeholder: t(dictionary, "coupon.placeholder"),
-            redeem: t(dictionary, "coupon.redeem"),
+            title: t(dictionary, "forecast.title"),
+            subtitle: t(dictionary, "forecast.subtitle"),
+            trialBadge: t(dictionary, "forecast.trialBadge"),
             loading: t(dictionary, "common.loading"),
-            success: t(dictionary, "coupon.success"),
-            loginRequired: t(dictionary, "coupon.errors.loginRequired"),
-            freeAlreadyUsed: t(dictionary, "coupon.errors.freeAlreadyUsed"),
-            invalid: t(dictionary, "coupon.errors.invalid"),
-            failed: t(dictionary, "coupon.errors.failed")
+            error: t(dictionary, "common.error"),
+            hourNow: t(dictionary, "forecast.hourNow"),
+            hourLabel: (offset) => offset === 0 ? t(dictionary, "forecast.hourNow") : t(dictionary, "forecast.hourLabel", { offset }),
+            disciplines: {
+              planetary: t(dictionary, "forecast.disciplines.planetary"),
+              thai: t(dictionary, "forecast.disciplines.thai"),
+              bazi: t(dictionary, "forecast.disciplines.bazi")
+            },
+            domains: {
+              money: t(dictionary, "forecast.domains.money"),
+              career: t(dictionary, "forecast.domains.career"),
+              luck: t(dictionary, "forecast.domains.luck"),
+              opportunity: t(dictionary, "forecast.domains.opportunity"),
+              love: t(dictionary, "forecast.domains.love")
+            },
+            ruler: t(dictionary, "forecast.ruler"),
+            score: t(dictionary, "forecast.score"),
+            safety: t(dictionary, "forecast.safety"),
+            refresh: t(dictionary, "forecast.refresh")
           }}
         />
-        <BirthProfileForm dictionary={flatForm} state={formState} onChange={setFormState} onSubmit={runAnalysis} loading={loading} />
+        <div className="mode-switch" role="tablist" aria-label={t(dictionary, "fortune.modeLabel")}>
+          <button type="button" role="tab" aria-selected={analysisMode === "bazi"} onClick={() => setAnalysisMode("bazi")}>{t(dictionary, "fortune.baziMode")}</button>
+          <button type="button" role="tab" aria-selected={analysisMode === "tarot"} onClick={() => setAnalysisMode("tarot")}>{t(dictionary, "fortune.tarotMode")}</button>
+        </div>
+        {analysisMode === "bazi" ? (
+          <>
+            <CouponRedeemCard
+              labels={{
+                title: t(dictionary, "coupon.title"),
+                description: t(dictionary, "coupon.description"),
+                inputLabel: t(dictionary, "coupon.inputLabel"),
+                placeholder: t(dictionary, "coupon.placeholder"),
+                redeem: t(dictionary, "coupon.redeem"),
+                loading: t(dictionary, "common.loading"),
+                success: t(dictionary, "coupon.success"),
+                loginRequired: t(dictionary, "coupon.errors.loginRequired"),
+                freeAlreadyUsed: t(dictionary, "coupon.errors.freeAlreadyUsed"),
+                invalid: t(dictionary, "coupon.errors.invalid"),
+                failed: t(dictionary, "coupon.errors.failed")
+              }}
+            />
+            <BirthProfileForm dictionary={flatForm} state={formState} onChange={setFormState} onSubmit={runAnalysis} loading={loading} />
+          </>
+        ) : null}
       </div>
 
-      <div className="field-grid">
+      <div className={`field-grid workspace-main workspace-main--${analysisMode}`}>
+        {analysisMode === "tarot" ? (
+          <TarotDrawPanel
+            labels={{
+              title: t(dictionary, "tarot.title"),
+              subtitle: t(dictionary, "tarot.subtitle"),
+              spreadLabel: t(dictionary, "tarot.spreadLabel"),
+              oneCard: t(dictionary, "tarot.oneCard"),
+              threeCard: t(dictionary, "tarot.threeCard"),
+              questionLabel: t(dictionary, "tarot.questionLabel"),
+              questionPlaceholder: t(dictionary, "tarot.questionPlaceholder"),
+              reversalsLabel: t(dictionary, "tarot.reversalsLabel"),
+              draw: t(dictionary, "tarot.draw"),
+              loading: t(dictionary, "common.loading"),
+              receipt: t(dictionary, "tarot.receipt"),
+              audit: t(dictionary, "tarot.audit"),
+              upright: t(dictionary, "tarot.upright"),
+              reversed: t(dictionary, "tarot.reversed"),
+              meaningGeneral: t(dictionary, "tarot.meaningGeneral"),
+              meaningLove: t(dictionary, "tarot.meaningLove"),
+              meaningWork: t(dictionary, "tarot.meaningWork"),
+              meaningMoney: t(dictionary, "tarot.meaningMoney"),
+              safety: t(dictionary, "tarot.safety"),
+              error: t(dictionary, "common.error")
+            }}
+          />
+        ) : (
+          <>
         <div className={`f8sync-dashboard f8sync-dashboard--${f8syncViewModel.state.toLowerCase()}`} aria-busy={f8syncViewModel.state === "LOADING"}>
           {f8syncViewModel.state === "LOADING" ? (
             <div className="f8sync-loading-state" role="status">
@@ -425,6 +572,18 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
               <TimingStatusCard label={t(dictionary, "timing.current")} statusLabel={timingLabels[result.timing.currentStatus]} />
               <TimingWindowCard window={result.timing.nextOptimalWindow} locale={locale} timezone={result.metadata.contextTimezone} label={t(dictionary, "home.nextWindow")} />
             </div>
+            <TarotCompanionCard
+              reading={companionTarot}
+              labels={{
+                title: t(dictionary, "tarot.companionTitle"),
+                subtitle: t(dictionary, "tarot.companionSubtitle"),
+                empty: t(dictionary, "tarot.companionEmpty"),
+                upright: t(dictionary, "tarot.upright"),
+                reversed: t(dictionary, "tarot.reversed"),
+                meaningGeneral: t(dictionary, "tarot.meaningGeneral"),
+                safety: t(dictionary, "tarot.safety")
+              }}
+            />
             <DomainScoreGrid scores={result.scores as Record<string, number>} labels={domainLabels} />
             <RecommendationCard title={t(dictionary, "result.recommendations")} items={result.recommendations.map((item) => t(dictionary, item.messageKey, item.parameters))} />
             {result.warnings.length ? <RecommendationCard title={t(dictionary, "result.warnings")} items={result.warnings.map((item) => t(dictionary, item.messageKey, item.parameters))} /> : null}
@@ -470,6 +629,8 @@ export function AnalysisWorkspace({ locale, dictionary }: { locale: SupportedLoc
               <p className="muted">{t(dictionary, "home.nextWindow")}</p>
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

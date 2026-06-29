@@ -77,7 +77,8 @@ export type FeatureKey =
   | "saved_profiles"
   | "premium_plugins"
   | "export_report"
-  | "priority_processing";
+  | "priority_processing"
+  | "forecast_6h";
 
 export type ResultRevealLevel = "preview" | "partial" | "full";
 
